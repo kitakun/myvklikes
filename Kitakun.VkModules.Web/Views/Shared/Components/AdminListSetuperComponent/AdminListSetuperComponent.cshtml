@@ -1,0 +1,56 @@
+﻿<div class="page-block">
+    <h3>Вывести одного пользователя</h3>
+    <table class="fullwidth">
+        <tr>
+            <td><input id="suTitle" type="text" class="singleline-input" placeholder="Введите заголовок..." /></td>
+        </tr>
+        <tr>
+            <td><input id="suCustomName" type="text" class="singleline-input" placeholder="Введите имя пользователя..." /></td>
+        </tr>
+        <tr>
+            <td><input id="suUserId" type="text" class="singleline-input" placeholder="ID пользователя" /></td>
+        </tr>
+        <tr>
+            <td>
+                <textarea style="width:100%; min-height: 100px;" class="singleline-input"
+                          rows="3"
+                          id="suDescription" placeholder="Введите описание пользователя..."></textarea>
+            </td>
+        </tr>
+    </table>
+
+    <button id='makeSingleUser' class="flat-button">Вывести указанного пользователя</button>
+
+    <div class="example">
+        <div>Будет выглядеть так:</div>
+        <img src="~/wwwroot/img/singleExample.png" />
+    </div>
+</div>
+
+<script>
+    window.allcustombinds.push(function () {
+        document.getElementById('makeSingleUser').addEventListener('click',
+            function () {
+                var suTitle = document.getElementById('suTitle').value;
+                var suCustomName = document.getElementById('suCustomName').value;
+                var suUserId = document.getElementById('suUserId').value;
+                var suDescription = document.getElementById('suDescription').value;
+
+                var code = '\
+                            var user = API.users.get({user_ids : '+ suUserId + ', fields : "sex"})[0];\
+                            return {\
+                            "title": "' + suTitle + '",\
+                            "rows": [{\
+                                "title" : "' + suCustomName + '",\
+                                "title_url" : "https://vk.com/id" + user.id,\
+                                "icon_id" : "id" + user.id,\
+                                "descr" : "' + suDescription + '",\
+                            },]\
+                            };';
+
+                code = code.replace(/{first_name}/g, '" + user.first_name + "');
+                code = code.replace(/{last_name}/g, '" + user.last_name + "');
+                VK.callMethod('showAppWidgetPreviewBox', 'list', code);
+            });
+    })
+</script>

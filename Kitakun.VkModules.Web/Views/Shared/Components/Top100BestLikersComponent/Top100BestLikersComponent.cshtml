@@ -1,0 +1,139 @@
+﻿@model Kitakun.VkModules.Web.WebModels.Top100BestLikersModel
+@using Top100BestLikersComponent = Kitakun.VkModules.Web.Components.Top100BestLikersComponent;
+
+@{
+    string GetValueByIndexOrEmpty(int i, bool isFirst)
+    {
+        if (Model.Top100.Length > i + 1)
+        {
+            if (isFirst)
+            {
+                return Model.Top100[i].ToString();
+            }
+            else
+            {
+                return $", {Model.Top100[i]}";
+            }
+        }
+        return string.Empty;
+    }
+
+    var top3Array = Model.Top100.Take(3).ToArray();
+}
+
+<div class="page-block">
+    <table class="fullwidth likers-table">
+        <thead>
+            <tr>
+                <th class="center small-header">#</th>
+                <th class="center small-header">🙂</th>
+                <th class="user-header">Пользователь</th>
+                <th class="center small-header">Баллы</th>
+            </tr>
+        </thead>
+        <tbody class="likers">
+            @if (Model.Top100.Length > 0)
+            {
+                <tr>
+                    <td class="uicons center nowrap">🔥🔥🔥</td>
+                    <td class="center"><img src="@Model.UsersInfo[Model.Top100[0]].imgUrl" class="uicon" /></td>
+                    <td>@Model.UsersInfo[Model.Top100[0]].uName</td>
+                    <td class="center nowrap">@Model.Likes[Model.Top100[0]]</td>
+                </tr>
+            }
+            @if (Model.Top100.Length > 1)
+            {
+                <tr>
+                    <td class="uicons center nowrap">🌟</td>
+                    <td class="center"><img src="@Model.UsersInfo[Model.Top100[1]].imgUrl" class="uicon" /></td>
+                    <td>@Model.UsersInfo[Model.Top100[1]].uName</td>
+                    <td class="center nowrap">@Model.Likes[Model.Top100[1]]</td>
+                </tr>
+            }
+            @if (Model.Top100.Length > 2)
+            {
+                <tr>
+                    <td class="uicons center nowrap">⭐</td>
+                    <td class="center"><img src="@Model.UsersInfo[Model.Top100[2]].imgUrl" class="uicon" /></td>
+                    <td>@Model.UsersInfo[Model.Top100[2]].uName</td>
+                    <td class="center nowrap">@Model.Likes[Model.Top100[2]]</td>
+                </tr>
+            }
+            @if (Model.Top100.Length > 3)
+            {
+                for (var i = 3; i < Model.Top100.Length; i++)
+                {
+                    <tr>
+                        <td class="uicons center nowrap">@i+1</td>
+                        <td class="center"><img src="@Model.UsersInfo[Model.Top100[i]].imgUrl" class="uicon" /></td>
+                        <td>@Model.UsersInfo[Model.Top100[i]].uName</td>
+                        <td class="center nowrap">@Model.Likes[Model.Top100[i]]</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+    @if (Model.IsAdmin)
+    {
+        <button id='updateTopLikers' class="flat-button">Обновить виджет в сообществе</button>
+    }
+</div>
+
+<script>
+    window.allcustombinds.push(function () {
+        document.getElementById('updateTopLikers').addEventListener('click',
+            function () {
+                var code = '\
+                  var top3Usrs = [@string.Join(',', @Model.Top100.Take(3))];\
+                  var top3likers = [@string.Join(',', @Model.Likes.Where(w => top3Array.Contains(w.Key)).Select(s => s.Value).ToArray())];\
+                  var loadedUsrs = API.users.get({ user_ids: top3Usrs, fields: "sex" });\
+                  return {\
+                      "title": "Самые активные за месяц",\
+                      "rows": [\
+                            @Html.Raw(Top100BestLikersComponent.GenerateLikerRow(Model))\
+                      ]\
+                  };'
+                VK.callMethod('showAppWidgetPreviewBox', 'list', code);
+            });
+    })
+</script>
+
+<style>
+    .likers-table {
+        border-collapse: collapse;
+    }
+
+        .likers-table th {
+            border-bottom: 1px solid #d3d9de;
+            padding-bottom: 20px;
+        }
+
+    .small-header {
+        width: 50px;
+        white-space: nowrap;
+    }
+
+    .user-header {
+        height: 90%;
+        text-align: left;
+    }
+
+    .center {
+        text-align: center;
+    }
+
+    .nowrap {
+        white-space: nowrap;
+    }
+
+    .uicons {
+        height: 60px;
+    }
+
+    .uicon {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+    }
+</style>

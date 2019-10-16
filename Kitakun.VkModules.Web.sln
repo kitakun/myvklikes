@@ -1,0 +1,48 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.705
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kitakun.VkModules.Web", "Kitakun.VkModules.Web\Kitakun.VkModules.Web.csproj", "{332A5A81-42C3-4DFF-9F4A-072B4E028E88}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kitakun.VkModules.Services.Abstractions", "Kitakun.VkModules.Services.Abstractions\Kitakun.VkModules.Services.Abstractions.csproj", "{28CEA1F3-CF66-4ECA-B327-AF32D2B1F598}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{612709F8-85B2-423A-9524-B4E2C8349584}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kitakun.VkModules.Services.GroupLikeService", "Kitakun.VkModules.Services.GroupLikeService\Kitakun.VkModules.Services.GroupLikeService.csproj", "{251046B4-CAEE-4CFC-8DD7-3C862A56A8A0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kitakun.VkModules.Core", "Kitakun.VkModules.Core\Kitakun.VkModules.Core.csproj", "{535E7DE6-DAED-4FCF-98E4-16444F5AC06C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{332A5A81-42C3-4DFF-9F4A-072B4E028E88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{332A5A81-42C3-4DFF-9F4A-072B4E028E88}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{332A5A81-42C3-4DFF-9F4A-072B4E028E88}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{332A5A81-42C3-4DFF-9F4A-072B4E028E88}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28CEA1F3-CF66-4ECA-B327-AF32D2B1F598}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28CEA1F3-CF66-4ECA-B327-AF32D2B1F598}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28CEA1F3-CF66-4ECA-B327-AF32D2B1F598}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28CEA1F3-CF66-4ECA-B327-AF32D2B1F598}.Release|Any CPU.Build.0 = Release|Any CPU
+		{251046B4-CAEE-4CFC-8DD7-3C862A56A8A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{251046B4-CAEE-4CFC-8DD7-3C862A56A8A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{251046B4-CAEE-4CFC-8DD7-3C862A56A8A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{251046B4-CAEE-4CFC-8DD7-3C862A56A8A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{535E7DE6-DAED-4FCF-98E4-16444F5AC06C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{535E7DE6-DAED-4FCF-98E4-16444F5AC06C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{535E7DE6-DAED-4FCF-98E4-16444F5AC06C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{535E7DE6-DAED-4FCF-98E4-16444F5AC06C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{251046B4-CAEE-4CFC-8DD7-3C862A56A8A0} = {612709F8-85B2-423A-9524-B4E2C8349584}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6B066AC6-4F29-4924-A9FF-F7446A1B0B41}
+	EndGlobalSection
+EndGlobal

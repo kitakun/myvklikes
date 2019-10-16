@@ -1,0 +1,8 @@
+################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/Kitakun.EnotShop.Mapper/bin
+/.vs
+/**/obj
+/**/bin

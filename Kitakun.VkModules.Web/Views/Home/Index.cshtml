@@ -1,0 +1,47 @@
+﻿@model Kitakun.VkModules.Web.WebModels.HomeModel
+
+@{
+    Layout = "../Shared/_Layout";
+}
+
+@using AdminTitleChangerComponent = Kitakun.VkModules.Web.Components.AdminTitleChangerComponent;
+@using AdminListSetuperComponent = Kitakun.VkModules.Web.Components.AdminListSetuperComponent;
+@using Top100BestLikersComponent = Kitakun.VkModules.Web.Components.Top100BestLikersComponent;
+
+<div id="message"> </div>
+
+<div class="page-block">
+    <h2>Лучше лайкатели</h2>
+</div>
+
+@if (Model.IsAdmin)
+{
+    <div class="admin-panel">
+        <h4 class="admin">Управление</h4>
+
+        @await Component.InvokeAsync(nameof(AdminTitleChangerComponent))
+
+        @await Component.InvokeAsync(nameof(AdminListSetuperComponent))
+
+    </div>
+}
+
+@await Component.InvokeAsync(nameof(Top100BestLikersComponent))
+
+@section Style {
+    <style>
+        .admin-panel {
+            top: 10px;
+            position: relative;
+            padding: 2px;
+            border: 1px solid red;
+            margin: 2px;
+        }
+
+        h4.admin {
+            color: red;
+            padding: 0px;
+            margin: 0px;
+        }
+    </style>
+}
