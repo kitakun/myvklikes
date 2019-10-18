@@ -16,6 +16,12 @@ namespace Kitakun.VkModules.Services.Abstractions
 		/// <returns>Dictionary[userId, likesCount]</returns>
 		Task<IDictionary<long, int>> LoadAllLikesForCommunityPostsAsync(string token, long userId, DateTime from, DateTime to);
 
+        /// <summary>
+        /// Load users small preview with names by userIds
+        /// </summary>
+        /// <param name="token">app token</param>
+        /// <param name="userIds">User ids</param>
+        /// <returns>Dictionary</returns>
 		Task<IDictionary<long, (string imgUrl, string uName)>> GetUsersPhotoAndNames(string token, long[] userIds);
 	}
 }

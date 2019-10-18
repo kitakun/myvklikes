@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+    <LangVersion>7.2</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,7 +15,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Kitakun.VkModules.Persistance\Kitakun.VkModules.Persistance.csproj" />
     <ProjectReference Include="..\Kitakun.VkModules.Services.GroupLikeService\Kitakun.VkModules.Services.GroupLikeService.csproj" />
+    <ProjectReference Include="..\Kitakun.VkModules.Services.PersistanceServices\Kitakun.VkModules.Services.PersistanceServices.csproj" />
   </ItemGroup>
 
 </Project>

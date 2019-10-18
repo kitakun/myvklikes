@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
@@ -7,10 +7,12 @@
 
   <ItemGroup>
     <PackageReference Include="Autofac" Version="4.9.2" />
-    <PackageReference Include="VkNet" Version="1.44.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Kitakun.VkModules.Core\Kitakun.VkModules.Core.csproj" />
+    <ProjectReference Include="..\Kitakun.VkModules.Persistance\Kitakun.VkModules.Persistance.csproj" />
     <ProjectReference Include="..\Kitakun.VkModules.Services.Abstractions\Kitakun.VkModules.Services.Abstractions.csproj" />
   </ItemGroup>
 
