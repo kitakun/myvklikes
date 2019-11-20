@@ -6,10 +6,12 @@ using Kitakun.VkModules.Core.Domain;
 
 namespace Kitakun.VkModules.Persistance
 {
-    public interface IVkDbContext
-    {
-        DbSet<DataCollection> DataCollections { get; }
+	public interface IVkDbContext
+	{
+		DbSet<DataCollection> DataCollections { get; }
 
-        Task SaveChangesAsync();
-    }
+		DbSet<Subscription> Subscriptions { get; }
+
+		Task SaveChangesAsync();
+	}
 }

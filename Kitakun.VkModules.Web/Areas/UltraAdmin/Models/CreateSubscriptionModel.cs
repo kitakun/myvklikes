@@ -1,10 +1,10 @@
-namespace Kitakun.VkModules.Core.Domain
-{
-	using System;
+﻿using System;
 
-	public class Subscription : IEntity
+namespace Kitakun.VkModules.Web.Areas.UltraAdmin.Models
+{
+	public class CreateSubscriptionModel
 	{
-		public int Id { get; set; }
+		public int? Id { get; set; }
 
 		public long UserId { get; set; }
 

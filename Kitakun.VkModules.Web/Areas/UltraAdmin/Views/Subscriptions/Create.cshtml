@@ -1,0 +1,59 @@
+﻿@model Kitakun.VkModules.Web.Areas.UltraAdmin.Models.CreateSubscriptionModel
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>UltraAdmin</h1>
+
+@if (false)
+{
+    @*<div class="page-block">
+        <div class="info-wrap">
+            @if (!string.IsNullOrEmpty(Model.WarningMessage))
+            {
+                <div class="info">
+                    @Model.WarningMessage
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(Model.ExceptionMessage))
+            {
+                <div class="error">
+                    @Model.ExceptionMessage
+                </div>
+            }
+        </div>
+    </div>*@
+}
+
+<div class="page-block">
+    @if (Model.Id.HasValue)
+    {
+        <h3>Update subscription</h3>
+    }
+    else
+    {
+        <h3>Create new subscription</h3>
+    }
+    @using (Html.BeginForm())
+    {
+        @Html.HiddenFor(x => x.Id)
+
+        @Html.EditorFor(x => x.UserId, new { htmlAttributes = new { @class = "singleline-input" } })
+
+        @Html.EditorFor(x => x.GroupId, new { htmlAttributes = new { @class = "singleline-input" } })
+
+        @Html.EditorFor(x => x.From, new { htmlAttributes = new { @class = "singleline-input" } })
+
+        @Html.EditorFor(x => x.To, new { htmlAttributes = new { @class = "singleline-input" } })
+
+        @if (Model.Id.HasValue)
+        {
+            <button class="flat-button" type="submit">Обновить</button>
+        }
+        else
+        {
+            <button class="flat-button" type="submit">Создать новую</button>
+        }
+    }
+</div>

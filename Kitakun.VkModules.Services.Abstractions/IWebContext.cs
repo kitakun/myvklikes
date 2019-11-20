@@ -3,5 +3,6 @@
 	public interface IWebContext
 	{
 		bool IsAdmin { get; }
+		bool IsUltraAdmin { get; }
 	}
 }

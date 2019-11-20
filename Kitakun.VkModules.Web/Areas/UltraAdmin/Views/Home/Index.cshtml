@@ -1,0 +1,66 @@
+﻿@model Kitakun.VkModules.Web.Areas.UltraAdmin.Models.HomeViewModel
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>UltraAdmin</h1>
+
+@if (!string.IsNullOrEmpty(Model.ExceptionMessage) || !string.IsNullOrEmpty(Model.WarningMessage))
+{
+    <div class="page-block">
+        <div class="info-wrap">
+            @if (!string.IsNullOrEmpty(Model.WarningMessage))
+            {
+                <div class="info">
+                    @Model.WarningMessage
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(Model.ExceptionMessage))
+            {
+                <div class="error">
+                    @Model.ExceptionMessage
+                </div>
+            }
+        </div>
+    </div>
+}
+
+<div class="page-block">
+    <h3>Search</h3>
+    <input id="iSearch" type="text" class="singleline-input" placeholder="Search" value="@Model.SearchString">
+    <button id="btnSearch" class="flat-button">Start Search</button>
+
+    @if (Model.Subscriptions != null && Model.Subscriptions.Length > 0)
+    {
+        <table class="fullwidth">
+            <thead>
+                <tr>
+                    <th>UserID</th>
+                    <th>GroupID</th>
+                    <th>From</th>
+                    <th>To</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var sub in Model.Subscriptions)
+                {
+                    <tr>
+                        <td class="center">@sub.UserId</td>
+                        <td class="center">@sub.GroupId</td>
+                        <td class="center">@sub.From.ToShortDateString()</td>
+                        <td class="center">@sub.To.ToShortDateString()</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+<div class="page-block">
+    <h3>Navigation</h3>
+
+    <a asp-controller="Subscriptions"
+        asp-action="Create"
+        class="flat-button">Создать подписку</a>
+</div>

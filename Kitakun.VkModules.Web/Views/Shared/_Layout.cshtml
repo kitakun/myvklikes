@@ -14,6 +14,10 @@
             background-color: #edeef0;
         }
 
+        .center{
+            text-align:center;
+        }
+
         .page-block {
             position: relative;
             background: #fff;
@@ -89,11 +93,12 @@
             box-sizing: border-box;
             margin-bottom: 0px;
         }
-        .flat-button:active {
-            background-color: #4872a3;
-            padding-top: 8px;
-            padding-bottom: 7px;
-        }
+
+            .flat-button:active {
+                background-color: #4872a3;
+                padding-top: 8px;
+                padding-bottom: 7px;
+            }
 
         .example {
             border-radius: 4px;
@@ -102,20 +107,21 @@
             border-radius: 4px;
             padding: 17px 20px;
         }
-        .example div{
-            color:lightslategray;
-            margin-bottom: 15px;
-        }
-        .example img {
-            width:100%;
-        }
+
+            .example div {
+                color: lightslategray;
+                margin-bottom: 15px;
+            }
+
+            .example img {
+                width: 100%;
+            }
 
         .singleline-input {
             border: 1px solid #d3d9de;
             border-radius: 2px 0 0 2px;
             overflow: hidden;
             position: relative;
-
             font-size: 13px;
             font-family: -apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,Geneva,Noto Sans Armenian,Noto Sans Bengali,Noto Sans Cherokee,Noto Sans Devanagari,Noto Sans Ethiopic,Noto Sans Georgian,Noto Sans Hebrew,Noto Sans Kannada,Noto Sans Khmer,Noto Sans Lao,Noto Sans Osmanya,Noto Sans Tamil,Noto Sans Telugu,Noto Sans Thai,sans-serif;
             outline: none;
@@ -130,17 +136,44 @@
             height: 34px;
         }
 
-        .fullwidth{
-            width:100%;
+        .fullwidth {
+            width: 100%;
+        }
+
+        .info-wrap {
+            padding: 25px 30px 30px;
+        }
+
+        .info {
+            margin: 0px 0px 10px 0px;
+            background-color: #f0f2f5;
+            transition: background-color 2s linear;
+            padding: 7px 18px 9px;
+            border: 1px solid #c1c9d9;
+            border-radius: 2px;
+            line-height: 150%;
+            font-size: 13px;
+        }
+
+        .error {
+            border: 1px solid #e89b88;
+            background-color: #ffefe8;
+            padding: 8px 11px;
+            line-height: 160%;
+            font-size: 13px;
+        }
+
+        .singleline-input {
+            margin-bottom: 10px;
         }
     </style>
 
     <script>
         window.allcustombinds = [];
         document.addEventListener('DOMContentLoaded', function () {
-                for (var i = 0; i < window.allcustombinds.length; i++) {
-                    window.allcustombinds[i]();
-                }
+            for (var i = 0; i < window.allcustombinds.length; i++) {
+                window.allcustombinds[i]();
+            }
             VK.init(function () {
             }, function () {
                 document.getElementById('message').innerText = 'failed';

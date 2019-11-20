@@ -22,7 +22,7 @@
 		[HttpGet]
 		public IActionResult Index() => View(new HomeModel
 		{
-			IsAdmin = _webContext.IsAdmin
+			IsAdmin = _webContext.IsUltraAdmin || _webContext.IsAdmin
 		});
 	}
 }

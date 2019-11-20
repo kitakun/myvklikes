@@ -9,10 +9,10 @@ namespace Kitakun.VkModules.Web
 
 	public class Program
 	{
-        public const int HttpPort = 5000;
-        public const int HttpsPort = 5001;
+		public const int HttpPort = 5000;
+		public const int HttpsPort = 5001;
 
-        public static void Main(string[] args) =>
+		public static void Main(string[] args) =>
 			CreateWebHostBuilder(args)
 				.Build()
 				.Run();

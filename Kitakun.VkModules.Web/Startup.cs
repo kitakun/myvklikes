@@ -1,19 +1,16 @@
 namespace Kitakun.VkModules.Web
 {
-    using System;
-
 	using Autofac;
 
 	using Microsoft.AspNetCore.Builder;
 	using Microsoft.AspNetCore.Hosting;
 	using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.Http;
 	using Microsoft.Extensions.Configuration;
 	using Microsoft.Extensions.DependencyInjection;
 
 	using Kitakun.VkModules.Web.Infrastructure;
 
-    public class Startup
+	public class Startup
 	{
 		public IConfiguration Configuration { get; }
 
@@ -21,7 +18,7 @@ namespace Kitakun.VkModules.Web
 
 		public Startup(IConfiguration configuration)
 		{
-			Configuration = configuration;
+			Configuration = configuration ?? throw new System.ArgumentNullException(nameof(configuration));
 		}
 
 		// This method gets called by the runtime. Use this method to add services to the container.
@@ -31,21 +28,25 @@ namespace Kitakun.VkModules.Web
 				.AddMvc()
 				.SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
+			services.AddCors(c =>
+			{
+				c.AddPolicy(WebConstants.AllCorsName, options => options.AllowAnyOrigin());
+			});
 #if RELEASE
-            services.AddHsts(options =>
-            {
-                options.Preload = true;
-                options.IncludeSubDomains = true;
-                options.MaxAge = TimeSpan.FromDays(60);
-            });
+			services.AddHsts(options =>
+			{
+				options.Preload = true;
+				options.IncludeSubDomains = true;
+				options.MaxAge = TimeSpan.FromDays(60);
+			});
 
-            services.AddHttpsRedirection(options =>
-            {
-                options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect;
-                options.HttpsPort = Program.HttpsPort;
-            });
+			services.AddHttpsRedirection(options =>
+			{
+				options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect;
+				options.HttpsPort = Program.HttpsPort;
+			});
 #endif
-        }
+		}
 
 		public void ConfigureContainer(ContainerBuilder builder) => builder.Configurate();
 
@@ -62,26 +63,24 @@ namespace Kitakun.VkModules.Web
 			}
 			else
 			{
-                app.UseHsts();
-			    app.UseHttpsRedirection();
-            }
+				app.UseHsts();
+				app.UseHttpsRedirection();
+			}
 
 			//app.UseAuthentication();
 			app.UseStaticFiles();
-			
-			//app.UseSpaStaticFiles();
 
-			app.UseMvcWithDefaultRoute();
+			app.UseMvc(routes =>
+			{
+				routes.MapRoute(
+				name: "MyArea",
+				  template: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
-			//app.UseSpa(spa =>
-			//{
-			//	spa.Options.SourcePath = "ClientApp/PlumsailAppClient";
-
-			//	if (env.IsDevelopment())
-			//	{
-			//		//spa.UseAngularCliServer(npmScript: "serve");
-			//	}
-			//});
+				routes.MapRoute(
+				   name: "default",
+				   template: "{controller=Home}/{action=Index}/{id?}");
+			});
+			//app.UseMvcWithDefaultRoute();
 		}
 	}
 }
