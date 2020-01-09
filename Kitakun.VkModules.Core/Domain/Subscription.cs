@@ -12,6 +12,6 @@ namespace Kitakun.VkModules.Core.Domain
 
 		public DateTime From { get; set; }
 
-		public DateTime To { get; set; }
+		public DateTime? To { get; set; }
 	}
 }

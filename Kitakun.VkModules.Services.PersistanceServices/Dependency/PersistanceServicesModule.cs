@@ -12,6 +12,11 @@
                 .RegisterType<DataCollectionsService>()
                 .As<IDataCollectionsService>()
                 .InstancePerLifetimeScope();
+
+            builder
+                .RegisterType<SubscriptionsService>()
+                .As<ISubscriptionsService>()
+                .InstancePerLifetimeScope();
         }
     }
 }

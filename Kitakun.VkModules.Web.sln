@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kitakun.VkModules.Core", "K
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kitakun.VkModules.Persistance", "Kitakun.VkModules.Persistance\Kitakun.VkModules.Persistance.csproj", "{F17082BA-5E4E-408B-92A8-F588150CCCC2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kitakun.VkModules.Services.PersistanceServices", "Kitakun.VkModules.Services.PersistanceServices\Kitakun.VkModules.Services.PersistanceServices.csproj", "{D65F5F0C-71B8-4003-9EC2-8BAEF23386A0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kitakun.VkModules.Services.PersistanceServices", "Kitakun.VkModules.Services.PersistanceServices\Kitakun.VkModules.Services.PersistanceServices.csproj", "{D65F5F0C-71B8-4003-9EC2-8BAEF23386A0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kitakun.VkModules.Services.Utils", "Kitakun.VkModules.Services.Utils\Kitakun.VkModules.Services.Utils.csproj", "{7D99857C-3877-40B4-8259-6F53DEEE075D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +49,10 @@ Global
 		{D65F5F0C-71B8-4003-9EC2-8BAEF23386A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D65F5F0C-71B8-4003-9EC2-8BAEF23386A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D65F5F0C-71B8-4003-9EC2-8BAEF23386A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D99857C-3877-40B4-8259-6F53DEEE075D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D99857C-3877-40B4-8259-6F53DEEE075D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D99857C-3877-40B4-8259-6F53DEEE075D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D99857C-3877-40B4-8259-6F53DEEE075D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -54,6 +60,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{251046B4-CAEE-4CFC-8DD7-3C862A56A8A0} = {612709F8-85B2-423A-9524-B4E2C8349584}
 		{D65F5F0C-71B8-4003-9EC2-8BAEF23386A0} = {612709F8-85B2-423A-9524-B4E2C8349584}
+		{7D99857C-3877-40B4-8259-6F53DEEE075D} = {612709F8-85B2-423A-9524-B4E2C8349584}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6B066AC6-4F29-4924-A9FF-F7446A1B0B41}

@@ -1,7 +1,10 @@
 namespace Kitakun.VkModules.Core.Domain
 {
-	public interface IEntity
-	{
-		int Id { get; set; }
-	}
+    using System.ComponentModel.DataAnnotations;
+
+    public interface IEntity
+    {
+        [Key]
+        int Id { get; set; }
+    }
 }

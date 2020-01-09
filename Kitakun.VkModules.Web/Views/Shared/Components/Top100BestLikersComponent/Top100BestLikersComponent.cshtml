@@ -2,22 +2,6 @@
 @using Top100BestLikersComponent = Kitakun.VkModules.Web.Components.Top100BestLikersComponent;
 
 @{
-    string GetValueByIndexOrEmpty(int i, bool isFirst)
-    {
-        if (Model.Top100.Length > i + 1)
-        {
-            if (isFirst)
-            {
-                return Model.Top100[i].ToString();
-            }
-            else
-            {
-                return $", {Model.Top100[i]}";
-            }
-        }
-        return string.Empty;
-    }
-
     var top3Array = Model.Top100.Take(3).ToArray();
 }
 
@@ -64,7 +48,7 @@
                 for (var i = 3; i < Model.Top100.Length; i++)
                 {
                     <tr>
-                        <td class="uicons center nowrap">@i+1</td>
+                        <td class="uicons center nowrap">@(i+1)</td>
                         <td class="center"><img src="@Model.UsersInfo[Model.Top100[i]].imgUrl" class="uicon" /></td>
                         <td>@Model.UsersInfo[Model.Top100[i]].uName</td>
                         <td class="center nowrap">@Model.Likes[Model.Top100[i]]</td>
@@ -76,7 +60,12 @@
 
     @if (Model.IsAdmin)
     {
-        <button id='updateTopLikers' class="flat-button">Обновить виджет в сообществе</button>
+        <div class="admin-panel">
+            <div class="example">
+                <div>Перерасчет происходит 1 раз в день при первом открытии этого фрейма</div>
+            </div>
+            <button id='updateTopLikers' class="flat-button">Обновить виджет в сообществе</button>
+        </div>
     }
 </div>
 

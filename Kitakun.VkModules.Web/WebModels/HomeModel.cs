@@ -2,6 +2,8 @@
 {
 	public sealed class HomeModel
 	{
+        public bool HasSubscription = false;
+
 		public bool IsAdmin = false;
 	}
 }

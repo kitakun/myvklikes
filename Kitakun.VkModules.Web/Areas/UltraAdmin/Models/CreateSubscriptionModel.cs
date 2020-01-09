@@ -12,6 +12,6 @@ namespace Kitakun.VkModules.Web.Areas.UltraAdmin.Models
 
 		public DateTime From { get; set; }
 
-		public DateTime To { get; set; }
+		public DateTime? To { get; set; }
 	}
 }

@@ -4,5 +4,6 @@
 	{
 		bool IsAdmin { get; }
 		bool IsUltraAdmin { get; }
+        long GroupId { get; }
 	}
 }

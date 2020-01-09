@@ -49,49 +49,53 @@ namespace Kitakun.VkModules.Services.GroupLikeService
 
 			var allPosts = new List<Post>();
 
+            const ulong loadPerPart = 100;
+
 			var lastLoadedPosts = await api.Wall.GetAsync(new WallGetParams
 			{
-				Count = 100,
+				Count = loadPerPart,
 				OwnerId = userId,
-				Extended = false,
+				Extended = false
 			});
 			//validating first recieve posts
 			var firstPosts = lastLoadedPosts.WallPosts.Where(a => a.Date > from && a.Date < to);
 			allPosts.AddRange(firstPosts);
 
-			ulong loadedCount = 100;
+			ulong loadedCount = 0;
 
-			var loadMore = !lastLoadedPosts.WallPosts.Any(a => a.Date < from || a.Date > to) || lastLoadedPosts.TotalCount > loadedCount;
+			var loadMore = lastLoadedPosts.TotalCount > loadPerPart;
 			while (loadMore)
 			{
-				loadedCount += 100;
+				loadedCount += loadPerPart;
 				lastLoadedPosts = await api.Wall.GetAsync(new WallGetParams
 				{
-					Count = 100,
+					Count = loadPerPart,
 					OwnerId = userId,
 					Extended = false,
+                    Offset = loadedCount
 				});
 				allPosts.AddRange(lastLoadedPosts.WallPosts.Where(a => a.Date > from && a.Date < to));
-				loadMore = !lastLoadedPosts.WallPosts.Any(a => a.Date < from || a.Date > to) || lastLoadedPosts.TotalCount > loadedCount;
+				loadMore = lastLoadedPosts.WallPosts.Count > 0 
+                    && !lastLoadedPosts.WallPosts.Any(a => a.Date >= from && a.Date <= to) || lastLoadedPosts.TotalCount > loadedCount;
 			}
 
 			var linkedUserWithLikesCount = new Dictionary<long, int>();
 
-			if (allPosts.Any())
+			if (allPosts.Count > 0)
 			{
 				var postsIdsWithLikes = allPosts
-					.Where(w => w.Likes.Count > 0)
-					.Select(s => s.Id);
+					.Where(w => w.Likes.Count > 0 && w.Id.HasValue)
+					.Select(s => s.Id.Value)
+                    .ToArray();
 
 				var loadPostsTask = postsIdsWithLikes
-					.Where(v => v.HasValue)
 					.Select(postId => api.Likes.GetListAsync(new LikesGetListParams
 					{
 						OwnerId = userId,
 						Type = LikeObjectType.Post,
-						ItemId = postId.Value,
+						ItemId = postId,
 						Extended = true
-					}));
+					})).ToArray();
 
 				await Task.WhenAll(loadPostsTask);
 

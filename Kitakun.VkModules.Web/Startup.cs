@@ -1,37 +1,43 @@
 namespace Kitakun.VkModules.Web
 {
-	using Autofac;
+#if RELEASE
+    using System;
+    using Microsoft.AspNetCore.Http;
+#endif
+    using Autofac;
 
-	using Microsoft.AspNetCore.Builder;
-	using Microsoft.AspNetCore.Hosting;
-	using Microsoft.AspNetCore.Mvc;
-	using Microsoft.Extensions.Configuration;
-	using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.HttpOverrides;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
 
-	using Kitakun.VkModules.Web.Infrastructure;
+    using Kitakun.VkModules.Web.Infrastructure;
 
-	public class Startup
-	{
-		public IConfiguration Configuration { get; }
+    public class Startup
+    {
+        public IConfiguration Configuration { get; }
 
-		public IServiceCollection CoreServices { get; private set; }
+        public IServiceCollection CoreServices { get; private set; }
 
-		public Startup(IConfiguration configuration)
-		{
-			Configuration = configuration ?? throw new System.ArgumentNullException(nameof(configuration));
-		}
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration ?? throw new System.ArgumentNullException(nameof(configuration));
+        }
 
-		// This method gets called by the runtime. Use this method to add services to the container.
-		public void ConfigureServices(IServiceCollection services)
-		{
-			services
-				.AddMvc()
-				.SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+        // This method gets called by the runtime. Use this method to add services to the container.
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services
+                .AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
-			services.AddCors(c =>
-			{
-				c.AddPolicy(WebConstants.AllCorsName, options => options.AllowAnyOrigin());
-			});
+            services.AddCors(c =>
+            {
+                c.AddPolicy(WebConstants.AllCorsName, options => options.AllowAnyOrigin());
+            });
 #if RELEASE
 			services.AddHsts(options =>
 			{
@@ -46,41 +52,47 @@ namespace Kitakun.VkModules.Web
 				options.HttpsPort = Program.HttpsPort;
 			});
 #endif
-		}
+        }
 
-		public void ConfigureContainer(ContainerBuilder builder) => builder.Configurate();
+        public void ConfigureContainer(ContainerBuilder builder) => builder.Configurate();
 
-		public void Configure(
-			IApplicationBuilder app,
-			IHostingEnvironment env,
-			IApplicationLifetime appLifetime)
-		{
-			app.UseMiddleware<ApiErrorHandlingMiddleware>();
+        public void Configure(
+            IApplicationBuilder app,
+            IHostingEnvironment env,
+            IApplicationLifetime appLifetime,
+            ILoggerFactory loggerFactory)
+        {
+            app.UseMiddleware<ApiErrorHandlingMiddleware>();
 
-			if (env.IsDevelopment())
-			{
-				app.UseDeveloperExceptionPage();
-			}
-			else
-			{
-				app.UseHsts();
-				app.UseHttpsRedirection();
-			}
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseHsts();
+                //app.UseHttpsRedirection();
+            }
 
-			//app.UseAuthentication();
-			app.UseStaticFiles();
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            });
 
-			app.UseMvc(routes =>
-			{
-				routes.MapRoute(
-				name: "MyArea",
-				  template: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+            //app.UseAuthentication();
+            app.UseStaticFiles();
+            app.UseMvcWithDefaultRoute();
 
-				routes.MapRoute(
-				   name: "default",
-				   template: "{controller=Home}/{action=Index}/{id?}");
-			});
-			//app.UseMvcWithDefaultRoute();
-		}
-	}
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                name: "MyArea",
+                  template: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
+                routes.MapRoute(
+                   name: "default",
+                   template: "{controller=Home}/{action=Index}/{id?}");
+            });
+        }
+    }
 }

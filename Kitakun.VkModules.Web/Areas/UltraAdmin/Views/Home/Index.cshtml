@@ -27,34 +27,37 @@
 }
 
 <div class="page-block">
-    <h3>Search</h3>
-    <input id="iSearch" type="text" class="singleline-input" placeholder="Search" value="@Model.SearchString">
-    <button id="btnSearch" class="flat-button">Start Search</button>
+    <form asp-controller="Home" asp-area="UltraAdmin" asp-action="Search">
+        @Html.AntiForgeryToken()
+        <h3>Search</h3>
+        <input type="text" name="searchString" class="singleline-input" placeholder="Search" value="@Model.SearchString">
+        <button id="btnSearch" type="submit" class="flat-button">Start Search</button>
 
-    @if (Model.Subscriptions != null && Model.Subscriptions.Length > 0)
-    {
-        <table class="fullwidth">
-            <thead>
-                <tr>
-                    <th>UserID</th>
-                    <th>GroupID</th>
-                    <th>From</th>
-                    <th>To</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach(var sub in Model.Subscriptions)
-                {
+        @if (Model.Subscriptions != null && Model.Subscriptions.Length > 0)
+        {
+            <table class="fullwidth">
+                <thead>
                     <tr>
-                        <td class="center">@sub.UserId</td>
-                        <td class="center">@sub.GroupId</td>
-                        <td class="center">@sub.From.ToShortDateString()</td>
-                        <td class="center">@sub.To.ToShortDateString()</td>
+                        <th>UserID</th>
+                        <th>GroupID</th>
+                        <th>From</th>
+                        <th>To</th>
                     </tr>
-                }
-            </tbody>
-        </table>
-    }
+                </thead>
+                <tbody>
+                    @foreach (var sub in Model.Subscriptions)
+                    {
+                        <tr>
+                            <td class="center">@sub.UserId</td>
+                            <td class="center">@sub.GroupId</td>
+                            <td class="center">@sub.From.ToShortDateString()</td>
+                            <td class="center">@(sub.To?.ToShortDateString() ?? "-")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </form>
 </div>
 
 <div class="page-block">

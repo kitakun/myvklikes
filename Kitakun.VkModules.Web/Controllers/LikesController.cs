@@ -1,6 +1,7 @@
 namespace Kitakun.VkModules.Web.Controllers
 {
-	using System;
+#if DEBUG
+    using System;
 	using System.Collections.Generic;
 	using System.Threading.Tasks;
 
@@ -36,4 +37,5 @@ namespace Kitakun.VkModules.Web.Controllers
 			return _groupLikeService.LoadAllLikesForCommunityPostsAsync(AppToken, groupId, firstDayOfMonth, lastDayOfMonth);
 		}
 	}
+#endif
 }

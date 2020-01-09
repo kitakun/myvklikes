@@ -26,7 +26,25 @@
     </div>
 }
 
-@await Component.InvokeAsync(nameof(Top100BestLikersComponent))
+@if (Model.HasSubscription)
+{
+    @await Component.InvokeAsync(nameof(Top100BestLikersComponent))
+}
+else
+{
+    @if (Model.IsAdmin)
+    {
+        <div class="admin-panel">
+            У вас нет подписки, свяжитесь с администратором виджета
+        </div>
+    }
+    else
+    {
+        <div class="page-block">
+            Отдыхаем хорошо
+        </div>
+    }
+}
 
 @section Style {
     <style>

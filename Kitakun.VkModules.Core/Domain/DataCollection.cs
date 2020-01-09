@@ -1,10 +1,10 @@
 namespace Kitakun.VkModules.Core.Domain
 {
-	using System;
+    using System;
 
-	public class DataCollection : IEntity
-	{
-		public int Id { get; set; }
+    public class DataCollection : IEntity
+    {
+        public int Id { get; set; }
 
         /// <summary>
         /// Calculation external owner (groupId)
@@ -34,5 +34,5 @@ namespace Kitakun.VkModules.Core.Domain
         /// Our service Json data
         /// </summary>
 		public string JsonValue { get; set; }
-	}
+    }
 }
