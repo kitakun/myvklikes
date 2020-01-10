@@ -9,21 +9,32 @@
 @if (false)
 {
     @*<div class="page-block">
+            <div class="info-wrap">
+                @if (!string.IsNullOrEmpty(Model.WarningMessage))
+                {
+                    <div class="info">
+                        @Model.WarningMessage
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(Model.ExceptionMessage))
+                {
+                    <div class="error">
+                        @Model.ExceptionMessage
+                    </div>
+                }
+            </div>
+        </div>*@
+}
+
+@if (!string.IsNullOrEmpty(ViewBag.Message))
+{
+    <div class="page-block">
         <div class="info-wrap">
-            @if (!string.IsNullOrEmpty(Model.WarningMessage))
-            {
-                <div class="info">
-                    @Model.WarningMessage
-                </div>
-            }
-            @if (!string.IsNullOrEmpty(Model.ExceptionMessage))
-            {
-                <div class="error">
-                    @Model.ExceptionMessage
-                </div>
-            }
+            <div class="info">
+                @Html.Raw(ViewBag.Message.ToString())
+            </div>
         </div>
-    </div>*@
+    </div>
 }
 
 <div class="page-block">

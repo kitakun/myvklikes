@@ -1,0 +1,62 @@
+﻿@model Kitakun.VkModules.Core.Domain.GroupSettings
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>UltraAdmin</h1>
+
+@if(!string.IsNullOrEmpty(ViewBag.Message))
+{
+    <div class="page-block">
+        <div class="info-wrap">
+            <div class="info">
+                @Html.Raw(ViewBag.Message.ToString())
+            </div>
+        </div>
+    </div>
+}
+
+    <div class="page-block">
+        @if (Model.Id > 0)
+        {
+            <h3>Update group setting</h3>
+        }
+        else
+        {
+            <h3>Create new group setting</h3>
+        }
+        @using (Html.BeginForm())
+        {
+            @Html.HiddenFor(x => x.Id)
+
+            @if (Model.Id > 0)
+            {
+                @Html.LabelFor(x => x.GroupId)
+                @Html.EditorFor(x => x.GroupId, new { htmlAttributes = new { @class = "singleline-input readonly disabled" } })
+            }
+            else
+            {
+                @Html.LabelFor(x => x.GroupId)
+                @Html.EditorFor(x => x.GroupId, new { htmlAttributes = new { @class = "singleline-input" } })
+            }
+
+            @Html.LabelFor(x => x.GroupAppToken)
+            @Html.EditorFor(x => x.GroupAppToken, new { htmlAttributes = new { @class = "singleline-input" } })
+
+            @Html.LabelFor(x => x.ReverseGroup)
+            @Html.EditorFor(x => x.ReverseGroup, new { htmlAttributes = new { @class = "singleline-input" } })
+
+            @Html.LabelFor(x => x.TopLikersHeaderMessage)
+            @Html.EditorFor(x => x.TopLikersHeaderMessage, new { htmlAttributes = new { @class = "singleline-input" } })
+
+            @if (Model.Id > 0)
+            {
+                <button class="flat-button" type="submit">Обновить</button>
+            }
+            else
+            {
+                <button class="flat-button" type="submit">Создать новую</button>
+            }
+        }
+    </div>

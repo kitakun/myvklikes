@@ -19,7 +19,7 @@ namespace Kitakun.VkModules.Services.GroupLikeService
 		private VkApi _sharedVkApi;
 		private string _sharedForToken;
 
-		private async Task<VkApi> GetApi(string token)
+		public async Task<VkApi> GetApi(string token)
 		{
 			if(_sharedVkApi != null && _sharedForToken == token)
 			{

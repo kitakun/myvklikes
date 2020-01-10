@@ -47,11 +47,13 @@
 			await _dbContext.Subscriptions.AddAsync(newSubscription);
 			await _dbContext.SaveChangesAsync();
 
-			return View(model);
+            ViewBag.Message = "Успешно создано";
+
+            return View(model);
 		}
 
 		[HttpGet]
-		public async Task<IActionResult> Edit([FromQuery] int? id)
+		public async Task<IActionResult> Edit([FromRoute] int? id)
 		{
 			var subscription = await _dbContext.Subscriptions.FindAsync(id.Value);
 
@@ -77,7 +79,9 @@
 
 			await _dbContext.SaveChangesAsync();
 
-			return View("Create", model);
+            ViewBag.Message = "Успешно обнавлено";
+
+            return View("Create", model);
 		}
 	}
 }

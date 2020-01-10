@@ -26,6 +26,8 @@ namespace Kitakun.VkModules.Persistance
 
         public DbSet<Subscription> Subscriptions { get; set; }
 
+        public DbSet<GroupSettings> GroupSettings { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder options)
             => options
 #if DEBUG

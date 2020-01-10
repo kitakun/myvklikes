@@ -19,12 +19,14 @@
     [EnableCors(WebConstants.AllCorsName)]
     public class HomeController : Controller
     {
+        const int takeOnly = 5;
+
         private readonly IWebContext _webContext;
-        private readonly IVkDbContext _dbContext;
+        private readonly VkDbContext _dbContext;
 
         public HomeController(
             IWebContext webContext,
-            IVkDbContext dbContext)
+            VkDbContext dbContext)
         {
             _webContext = webContext ?? throw new ArgumentNullException(nameof(webContext));
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
@@ -33,10 +35,12 @@
         [HttpGet]
         public async Task<IActionResult> Index()
         {
+#if RELEASE
             if (!_webContext.IsUltraAdmin)
             {
                 return NotFound();
             }
+#endif
 
             var model = new HomeViewModel
             {
@@ -44,8 +48,6 @@
             };
             try
             {
-                const int takeOnly = 5;
-
                 model.Subscriptions = await _dbContext
                     .Subscriptions
                     .AsNoTracking()
@@ -65,7 +67,7 @@
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Search([FromForm] string searchString)
+        public async Task<IActionResult> SearchSubs([FromForm] string searchString)
         {
             var model = new HomeViewModel
             {
@@ -103,5 +105,49 @@
 
             return View(nameof(Index), model);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SearchGroupSetting([FromForm] string searchGroupSettings)
+        {
+            if (long.TryParse(searchGroupSettings, out var parsedGroupId))
+            {
+                var hasSetts = await _dbContext.GroupSettings.AnyAsync(a => a.GroupId == parsedGroupId);
+                if (hasSetts)
+                {
+                    return RedirectToAction(
+                        nameof(GroupSettingsController.Index),
+                        nameof(GroupSettingsController).Replace("Controller",""),
+                        new
+                        {
+                            groupId = parsedGroupId
+                        });
+                }
+                else
+                {
+                    return RedirectToAction(
+                        nameof(GroupSettingsController.Create),
+                        nameof(GroupSettingsController).Replace("Controller", ""));
+                }
+            }
+            else
+            {
+                var model = new HomeViewModel
+                {
+                    SearchString = string.Empty,
+                    WarningMessage = $"Can't parse group Id for '{searchGroupSettings}'",
+                    Subscriptions = await _dbContext
+                        .Subscriptions
+                        .AsNoTracking()
+                        .OrderBy(x => x.From)
+                        .Take(takeOnly)
+                        .ToArrayAsync()
+                };
+                return View(nameof(Index), model);
+            }
+        }
+
+        [HttpPost]
+        public Task UpdateDatabase() => _dbContext.Database.MigrateAsync();
     }
 }

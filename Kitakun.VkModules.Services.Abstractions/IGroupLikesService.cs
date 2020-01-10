@@ -4,17 +4,21 @@ namespace Kitakun.VkModules.Services.Abstractions
 	using System.Collections.Generic;
 	using System.Threading.Tasks;
 
-	public interface IGroupLikesService
+    using VkNet;
+
+    public interface IGroupLikesService
 	{
-		/// <summary>
-		/// Load all likes for community with filter
-		/// </summary>
-		/// <param name="token">app service key</param>
-		/// <param name="userId">user or group id</param>
-		/// <param name="from">From datetime</param>
-		/// <param name="to">To datetime</param>
-		/// <returns>Dictionary[userId, likesCount]</returns>
-		Task<IDictionary<long, int>> LoadAllLikesForCommunityPostsAsync(string token, long userId, DateTime from, DateTime to);
+        Task<VkApi> GetApi(string token);
+
+        /// <summary>
+        /// Load all likes for community with filter
+        /// </summary>
+        /// <param name="token">app service key</param>
+        /// <param name="userId">user or group id</param>
+        /// <param name="from">From datetime</param>
+        /// <param name="to">To datetime</param>
+        /// <returns>Dictionary[userId, likesCount]</returns>
+        Task<IDictionary<long, int>> LoadAllLikesForCommunityPostsAsync(string token, long userId, DateTime from, DateTime to);
 
         /// <summary>
         /// Load users small preview with names by userIds

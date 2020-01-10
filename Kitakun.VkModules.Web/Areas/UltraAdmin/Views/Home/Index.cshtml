@@ -27,9 +27,18 @@
 }
 
 <div class="page-block">
-    <form asp-controller="Home" asp-area="UltraAdmin" asp-action="Search">
+    <form asp-controller="Home" asp-area="UltraAdmin" asp-action="SearchGroupSetting">
         @Html.AntiForgeryToken()
-        <h3>Search</h3>
+        <h3>Search group settings</h3>
+        <input type="text" name="searchGroupSettings" class="singleline-input" placeholder="Group ID">
+        <button id="btnSearch" type="submit" class="flat-button">Start Search</button>
+    </form>
+</div>
+
+<div class="page-block">
+    <form asp-controller="Home" asp-area="UltraAdmin" asp-action="SearchSubs">
+        @Html.AntiForgeryToken()
+        <h3>Search subscription</h3>
         <input type="text" name="searchString" class="singleline-input" placeholder="Search" value="@Model.SearchString">
         <button id="btnSearch" type="submit" class="flat-button">Start Search</button>
 
@@ -42,6 +51,7 @@
                         <th>GroupID</th>
                         <th>From</th>
                         <th>To</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -52,6 +62,12 @@
                             <td class="center">@sub.GroupId</td>
                             <td class="center">@sub.From.ToShortDateString()</td>
                             <td class="center">@(sub.To?.ToShortDateString() ?? "-")</td>
+                            <td>
+                                <a asp-controller="Subscriptions"
+                                   asp-action="Edit"
+                                   asp-route-id="@sub.Id"
+                                   class="flat-button">Edit</a>
+                            </td>
                         </tr>
                     }
                 </tbody>
@@ -64,6 +80,15 @@
     <h3>Navigation</h3>
 
     <a asp-controller="Subscriptions"
-        asp-action="Create"
-        class="flat-button">Создать подписку</a>
+       asp-action="Create"
+       class="flat-button">Создать подписку</a>
+
+    <a asp-controller="GroupSettings"
+       asp-action="Create"
+       class="flat-button">Создать настройку для группы</a>
+
+    <form asp-controller="Home" asp-area="UltraAdmin" asp-action="UpdateDatabase">
+        <button type="submit" class="flat-button">Migrate database</button>
+    </form>
+
 </div>

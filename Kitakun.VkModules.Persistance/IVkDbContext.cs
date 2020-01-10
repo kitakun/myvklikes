@@ -1,17 +1,19 @@
-﻿using System.Threading.Tasks;
-
-using Microsoft.EntityFrameworkCore;
-
-using Kitakun.VkModules.Core.Domain;
-
-namespace Kitakun.VkModules.Persistance
+﻿namespace Kitakun.VkModules.Persistance
 {
-	public interface IVkDbContext
-	{
-		DbSet<DataCollection> DataCollections { get; }
+    using System.Threading.Tasks;
 
-		DbSet<Subscription> Subscriptions { get; }
+    using Microsoft.EntityFrameworkCore;
 
-		Task SaveChangesAsync();
-	}
+    using Kitakun.VkModules.Core.Domain;
+
+    public interface IVkDbContext
+    {
+        DbSet<DataCollection> DataCollections { get; }
+
+        DbSet<GroupSettings> GroupSettings { get; }
+
+        DbSet<Subscription> Subscriptions { get; }
+
+        Task SaveChangesAsync();
+    }
 }

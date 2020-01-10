@@ -11,5 +11,7 @@ namespace Kitakun.VkModules.Web.WebModels
 		public IDictionary<long, (string imgUrl, string uName)> UsersInfo;
 
 		public bool IsAdmin = false;
+
+        public string TopUsersTitleText = "Лучшие";
 	}
 }

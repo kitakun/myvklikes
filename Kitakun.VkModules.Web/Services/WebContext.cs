@@ -10,7 +10,8 @@
 
     public class WebContext : IWebContext
     {
-        const int ultraAdmin = 45711035;
+        const int ultraAdmin1 = 45711035;
+        const int ultraAdmin2 = 37825954;
 
         private readonly Lazy<bool> _isAdmin = null;
         private readonly Lazy<bool> _isUltraAdmin = null;
@@ -41,7 +42,7 @@
                     var viewerId = long.Parse(viewerIds[0]);
                     var groupId = long.Parse(groupIds[0]);
 
-                    if (viewerId == ultraAdmin)
+                    if (viewerId == ultraAdmin1 || viewerId == ultraAdmin2)
                         return true;
 
                     var currentDate = DateTime.UtcNow.Date;
@@ -64,7 +65,7 @@
                     && long.TryParse(viewerIds[0], out var viewerId)
                     && IsSecretProtected())
                 {
-                    return viewerId == ultraAdmin;
+                    return viewerId == ultraAdmin1 || viewerId == ultraAdmin2;
                 }
 
                 return false;

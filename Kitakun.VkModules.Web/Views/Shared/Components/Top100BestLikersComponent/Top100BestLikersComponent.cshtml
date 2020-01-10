@@ -48,7 +48,7 @@
                 for (var i = 3; i < Model.Top100.Length; i++)
                 {
                     <tr>
-                        <td class="uicons center nowrap">@(i+1)</td>
+                        <td class="uicons center nowrap">@(i + 1)</td>
                         <td class="center"><img src="@Model.UsersInfo[Model.Top100[i]].imgUrl" class="uicon" /></td>
                         <td>@Model.UsersInfo[Model.Top100[i]].uName</td>
                         <td class="center nowrap">@Model.Likes[Model.Top100[i]]</td>
@@ -62,27 +62,36 @@
     {
         <div class="admin-panel">
             <div class="example">
-                <div>Перерасчет происходит 1 раз в день при первом открытии этого фрейма</div>
+                <div>Перерасчет происходит 1 раз в день при первом открытии этого фрейма ИЛИ по нажатию кнопку "пересчет"</div>
+                <button id="forceReload">Пересчет</button>
             </div>
+            <p><b>Заголовок:</b> @Model.TopUsersTitleText</p>
             <button id='updateTopLikers' class="flat-button">Обновить виджет в сообществе</button>
+            <button id='getGroupToken' class="flat-button">Получить токен сообщества</button>
         </div>
     }
 </div>
 
 <script>
     window.allcustombinds.push(function () {
+        document.getElementById('forceReload').addEventListener('click', function () {
+            var url = window.location.href;
+            if (url.indexOf('?') > -1) {
+                url += '&recalc'
+            } else {
+                url += '?recalc'
+            }
+            window.location.href = url;
+        });
+
+        document.getElementById('getGroupToken').addEventListener('click', function () {
+            VK.callMethod('showGroupSettingsBox', 64);
+        });
+
         document.getElementById('updateTopLikers').addEventListener('click',
             function () {
-                var code = '\
-                  var top3Usrs = [@string.Join(',', @Model.Top100.Take(3))];\
-                  var top3likers = [@string.Join(',', @Model.Likes.Where(w => top3Array.Contains(w.Key)).Select(s => s.Value).ToArray())];\
-                  var loadedUsrs = API.users.get({ user_ids: top3Usrs, fields: "sex" });\
-                  return {\
-                      "title": "Самые активные за месяц",\
-                      "rows": [\
-                            @Html.Raw(Top100BestLikersComponent.GenerateLikerRow(Model))\
-                      ]\
-                  };'
+                var code = @Html.Raw(Top100BestLikersComponent.GenerateCodeFromModel(Model))
+
                 VK.callMethod('showAppWidgetPreviewBox', 'list', code);
             });
     })
