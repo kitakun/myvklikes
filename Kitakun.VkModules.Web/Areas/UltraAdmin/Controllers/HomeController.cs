@@ -4,6 +4,7 @@
     using System.Linq;
     using System.Threading.Tasks;
 
+    using Hangfire;
     using Microsoft.AspNetCore.Cors;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Authorization;
@@ -13,6 +14,7 @@
     using Kitakun.VkModules.Services.Abstractions;
     using Kitakun.VkModules.Web.Areas.UltraAdmin.Models;
     using Kitakun.VkModules.Persistance;
+    using Kitakun.VkModules.Web.Controllers;
 
     [AllowAnonymous]
     [Area(AreaNames.UltraAdminAreaName)]
@@ -23,13 +25,16 @@
 
         private readonly IWebContext _webContext;
         private readonly VkDbContext _dbContext;
+        private readonly BackgroundUpdater _bgUpdater;
 
         public HomeController(
             IWebContext webContext,
-            VkDbContext dbContext)
+            VkDbContext dbContext,
+            BackgroundUpdater bgUpdater)
         {
             _webContext = webContext ?? throw new ArgumentNullException(nameof(webContext));
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            this._bgUpdater = bgUpdater ?? throw new ArgumentNullException(nameof(bgUpdater));
         }
 
         [HttpGet]
@@ -117,7 +122,7 @@
                 {
                     return RedirectToAction(
                         nameof(GroupSettingsController.Index),
-                        nameof(GroupSettingsController).Replace("Controller",""),
+                        nameof(GroupSettingsController).Replace("Controller", ""),
                         new
                         {
                             groupId = parsedGroupId
@@ -149,5 +154,28 @@
 
         [HttpPost]
         public Task UpdateDatabase() => _dbContext.Database.MigrateAsync();
+
+        private static bool IsTaskRunned = false;
+        public async Task<IActionResult> RunBackgroundUpdate()
+        {
+            if (IsTaskRunned)
+            {
+                return Ok("Already runned");
+            }
+
+            var groupIdsWithToken = await _dbContext
+                .GroupSettings
+                .Where(w => w.GroupAppToken.Length > 0 && w.GroupId.HasValue)
+                .Select(s => s.GroupId.Value)
+                .ToArrayAsync();
+
+            for (var i = 0; i < groupIdsWithToken.Length; i++)
+            {
+                BackgroundJob.Schedule(() => _bgUpdater.Run(groupIdsWithToken[i]), new TimeSpan(1, 0, 0));
+            }
+
+            IsTaskRunned = true;
+            return Ok("done");
+        }
     }
 }

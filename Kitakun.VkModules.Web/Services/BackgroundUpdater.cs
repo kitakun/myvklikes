@@ -4,24 +4,22 @@ namespace Kitakun.VkModules.Web.Controllers
     using System.Threading.Tasks;
     using System.Linq;
 
-    using Microsoft.AspNetCore.Cors;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
 
-    using Kitakun.VkModules.Web.Infrastructure;
     using Kitakun.VkModules.Services.Abstractions;
     using Kitakun.VkModules.Persistance;
     using Kitakun.VkModules.Web.WebModels;
     using Kitakun.VkModules.Web.Components;
 
-    [EnableCors(WebConstants.AllCorsName)]
-    public class LikesController : Controller
+    //[EnableCors(WebConstants.AllCorsName)]
+    public class BackgroundUpdater// : Controller
     {
         private const string AppToken = "924ddd86924ddd86924ddd86df922afcec9924d924ddd86c9b8b1155b39d3337c8f8840";
         private readonly IGroupLikesService _groupLikeService;
         private readonly IVkDbContext _dbContext;
 
-        public LikesController(
+        public BackgroundUpdater(
             IGroupLikesService groupLikeService,
             IVkDbContext dbContext)
         {
@@ -29,12 +27,18 @@ namespace Kitakun.VkModules.Web.Controllers
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] long groupId)
+        public async Task Run([FromQuery] long groupId)
         {
+            var curDate = DateTime.UtcNow;
+
+            var hasSub = await _dbContext.Subscriptions.AnyAsync(a => a.GroupId == groupId && a.From <= curDate && a.To >= curDate);
+            if (!hasSub)
+            {
+                //TODO log
+                return;
+            }
+
             var setting = await _dbContext.GroupSettings.FirstOrDefaultAsync(f => f.GroupId == groupId);
-            if (setting == null)
-                return NotFound();
 
             var actualGroupId = setting.ReverseGroup
                 ? groupId * -1
@@ -60,9 +64,7 @@ namespace Kitakun.VkModules.Web.Controllers
 
             var vk = await _groupLikeService.GetApi(setting.GroupAppToken);
             var code = Top100BestLikersComponent.GenerateCodeFromModelForApi(model);
-            var result = await vk.AppWidgets.UpdateAsync(code, "list");
-
-            return Ok(result);
+            await vk.AppWidgets.UpdateAsync(code, "list");
         }
     }
 }

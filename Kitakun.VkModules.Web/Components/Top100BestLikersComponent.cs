@@ -102,6 +102,8 @@
             return View(nameof(Top100BestLikersComponent), model);
         }
 
+        // VK JNET Generator methods
+
         public static string GenerateCodeFromModel(Top100BestLikersModel model)
         {
             var sb = new StringBuilder();

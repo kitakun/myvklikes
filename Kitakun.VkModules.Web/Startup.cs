@@ -5,6 +5,8 @@ namespace Kitakun.VkModules.Web
     using Microsoft.AspNetCore.Http;
 #endif
     using Autofac;
+    using Hangfire;
+    using Hangfire.MemoryStorage;
 
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -38,6 +40,9 @@ namespace Kitakun.VkModules.Web
             {
                 c.AddPolicy(WebConstants.AllCorsName, options => options.AllowAnyOrigin());
             });
+
+            services.AddHangfire(x => x.UseMemoryStorage());
+            services.AddHangfireServer();
 #if RELEASE
 			services.AddHsts(options =>
 			{
@@ -78,6 +83,8 @@ namespace Kitakun.VkModules.Web
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
+
+            app.UseHangfireDashboard(pathMatch: "/secrethangfire");
 
             //app.UseAuthentication();
             app.UseStaticFiles();
