@@ -41,18 +41,36 @@
             var recalc = HttpContext.Request.Query.TryGetValue("recalc", out var _);
 
             var calculationData = default(IDictionary<long, int>);
-            using (var locker = await KeyLocker<long>.LockAsync(groupId))
+            var idIsPositive = groupId > 0;
+            calcLabel:
+            try
             {
-                // get from DB
-                calculationData = recalc == false
-                    ? await _dataCollectionsService.GetGroupLikesData(groupId, firstDayOfMonth, lastDayOfMonth)
-                    : null;
-
-                // Load from api & save if we don't have it
-                if (recalc || calculationData == null)
+                using (var locker = await KeyLocker<long>.LockAsync(groupId))
                 {
-                    calculationData = await _likeService.LoadAllLikesForCommunityPostsAsync(AppToken, groupId, firstDayOfMonth, lastDayOfMonth);
-                    await _dataCollectionsService.SaveGroupLikesData(groupId, firstDayOfMonth, lastDayOfMonth, calculationData);
+                    // get from DB
+                    calculationData = recalc == false
+                        ? await _dataCollectionsService.GetGroupLikesData(groupId, firstDayOfMonth, lastDayOfMonth)
+                        : null;
+
+                    // Load from api & save if we don't have it
+                    if (recalc || calculationData == null)
+                    {
+                        calculationData = await _likeService.LoadAllLikesForCommunityPostsAsync(AppToken, groupId, firstDayOfMonth, lastDayOfMonth);
+                        await _dataCollectionsService.SaveGroupLikesData(groupId, firstDayOfMonth, lastDayOfMonth, calculationData);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                if (idIsPositive)
+                {
+                    idIsPositive = false;
+                    groupId *= -1;
+                    goto calcLabel;
+                }
+                else
+                {
+                    throw;
                 }
             }
 
@@ -89,13 +107,13 @@
             {
                 if (model.Top100.Length >= i + 1)
                 {
-                    bool hasNext = model.Top100.Length >= i + 2;
+                    bool hasNext = model.Top100.Length >= i + 2 && i != 2;
                     sb.AppendLine("{\\");
                     sb.AppendLine($"\"title\": loadedUsrs[{i}][\"last_name\"] + \" \" + loadedUsrs[{i}][\"first_name\"],\\");
                     sb.AppendLine($"\"title_url\": \"https://vk.com/id\" + loadedUsrs[{i}].id,\\");
                     sb.AppendLine($"\"icon_id\": \"id\" + loadedUsrs[{i}].id,\\");
                     sb.AppendLine($"\"descr\": \"Лайков: \" + top3likers[{i}]\\");
-                    sb.AppendFormat("{1}{0}\\", hasNext ? "," : "", "}");
+                    sb.AppendFormat("{1}{0}\\{2}", (hasNext ? "," : ""), "}", Environment.NewLine);
                 }
             }
             return sb.ToString();
