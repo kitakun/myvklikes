@@ -155,14 +155,8 @@
         [HttpPost]
         public Task UpdateDatabase() => _dbContext.Database.MigrateAsync();
 
-        private static bool IsTaskRunned = false;
         public async Task<IActionResult> RunBackgroundUpdate()
         {
-            if (IsTaskRunned)
-            {
-                return Ok("Already runned");
-            }
-
             var groupIdsWithToken = await _dbContext
                 .GroupSettings
                 .Where(w => w.GroupAppToken.Length > 0 && w.GroupId.HasValue)
@@ -171,10 +165,10 @@
 
             for (var i = 0; i < groupIdsWithToken.Length; i++)
             {
-                BackgroundJob.Schedule(() => _bgUpdater.Run(groupIdsWithToken[i]), new TimeSpan(1, 0, 0));
+                const string every15minterCron = "*/15 * * * *";
+                RecurringJob.AddOrUpdate(() => _bgUpdater.Run(groupIdsWithToken[i]), every15minterCron);
             }
 
-            IsTaskRunned = true;
             return Ok("done");
         }
     }
