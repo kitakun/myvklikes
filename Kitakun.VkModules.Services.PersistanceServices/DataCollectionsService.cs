@@ -23,7 +23,7 @@ namespace Kitakun.VkModules.Services.PersistanceServices
 
         public async Task<IDictionary<long, int>> GetGroupLikesDataAsync(long groupId, DateTime from, DateTime to)
         {
-            string foundedData = await _dbContext
+            var foundedData = await _dbContext
                 .DataCollections
                 .AsNoTracking()
                 .Where(w => w.Type == CollectionDataType.LikesOnPostsForTimeRange
@@ -31,11 +31,18 @@ namespace Kitakun.VkModules.Services.PersistanceServices
                     && w.To == to
                     && w.OwnerExternalId == groupId)
                 .OrderByDescending(x => x.CalculationStartedAt)
-                .Select(s => s.JsonValue)
+                .Select(s => new
+                {
+                    s.CalculationStartedAt,
+                    s.JsonValue
+                })
                 .FirstOrDefaultAsync();
 
-            return !string.IsNullOrEmpty(foundedData)
-                    ? JsonConvert.DeserializeObject<Dictionary<long, int>>(foundedData)
+            var calcDate = foundedData?.CalculationStartedAt ?? DateTime.MinValue;
+            var isInCurrentDay = (DateTime.Now - calcDate).Days == 0;
+
+            return !string.IsNullOrEmpty(foundedData?.JsonValue) && isInCurrentDay
+                    ? JsonConvert.DeserializeObject<Dictionary<long, int>>(foundedData.JsonValue)
                     : null;
         }
 

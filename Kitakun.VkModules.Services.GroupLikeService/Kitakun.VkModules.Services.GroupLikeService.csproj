@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Kitakun.VkModules.Persistance\Kitakun.VkModules.Persistance.csproj" />
     <ProjectReference Include="..\Kitakun.VkModules.Services.Abstractions\Kitakun.VkModules.Services.Abstractions.csproj" />
   </ItemGroup>
 

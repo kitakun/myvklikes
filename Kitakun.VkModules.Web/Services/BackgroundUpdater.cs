@@ -9,8 +9,8 @@ namespace Kitakun.VkModules.Web.Controllers
 
     using Kitakun.VkModules.Services.Abstractions;
     using Kitakun.VkModules.Persistance;
-    using Kitakun.VkModules.Web.WebModels;
     using Kitakun.VkModules.Web.Components;
+    using Kitakun.VkModules.Core.Models;
 
     //[EnableCors(WebConstants.AllCorsName)]
     public class BackgroundUpdater// : Controller
@@ -56,7 +56,6 @@ namespace Kitakun.VkModules.Web.Controllers
                 .ToArray();
             var model = new Top100BestLikersModel
             {
-                IsAdmin = false,
                 Likes = data,
                 Top100 = top100,
                 TopUsersTitleText = setting.TopLikersHeaderMessage

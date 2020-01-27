@@ -1,5 +1,4 @@
-﻿@model Kitakun.VkModules.Web.WebModels.Top100BestLikersModel
-@using Top100BestLikersComponent = Kitakun.VkModules.Web.Components.Top100BestLikersComponent;
+﻿@model Kitakun.VkModules.Core.Models.Top100BestLikersModel
 
 @{
     var top3Array = Model.Top100.Take(3).ToArray();
@@ -57,45 +56,7 @@
             }
         </tbody>
     </table>
-
-    @if (Model.IsAdmin)
-    {
-        <div class="admin-panel">
-            <div class="example">
-                <div>Перерасчет происходит 1 раз в день при первом открытии этого фрейма ИЛИ по нажатию кнопку "пересчет"</div>
-                <button id="forceReload">Пересчет</button>
-            </div>
-            <p><b>Заголовок:</b> @Model.TopUsersTitleText</p>
-            <button id='updateTopLikers' class="flat-button">Обновить виджет в сообществе</button>
-            <button id='getGroupToken' class="flat-button">Получить токен сообщества</button>
-        </div>
-    }
 </div>
-
-<script>
-    window.allcustombinds.push(function () {
-        document.getElementById('forceReload').addEventListener('click', function () {
-            var url = window.location.href;
-            if (url.indexOf('?') > -1) {
-                url += '&recalc'
-            } else {
-                url += '?recalc'
-            }
-            window.location.href = url;
-        });
-
-        document.getElementById('getGroupToken').addEventListener('click', function () {
-            VK.callMethod('showGroupSettingsBox', 64);
-        });
-
-        document.getElementById('updateTopLikers').addEventListener('click',
-            function () {
-                var code = @Html.Raw(Top100BestLikersComponent.GenerateCodeFromModel(Model))
-
-                VK.callMethod('showAppWidgetPreviewBox', 'list', code);
-            });
-    })
-</script>
 
 <style>
     .likers-table {

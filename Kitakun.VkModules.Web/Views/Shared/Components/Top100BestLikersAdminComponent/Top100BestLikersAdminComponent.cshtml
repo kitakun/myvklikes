@@ -1,0 +1,84 @@
+﻿@model Kitakun.VkModules.Web.WebModels.Top100BestLikersAdminModel
+@using Top100BestLikersComponent = Kitakun.VkModules.Web.Components.Top100BestLikersComponent;
+
+<div class="page-block">
+    <h3>Трое лучших</h3>
+    <div class="admin-panel">
+        <div class="example">
+            <div>Перерасчет происходит 1 раз в день при первом открытии этого фрейма ИЛИ по нажатию кнопку "пересчет"</div>
+            <button id="forceReload">Пересчет</button>
+        </div>
+        <p><b>Заголовок:</b> @Model.TopUsersTitleText</p>
+        <button id='updateTopLikers' class="flat-button">Обновить виджет в сообществе</button>
+        <button id='getGroupToken' class="flat-button">Получить токен сообщества</button>
+    </div>
+
+    <div class="example">
+        <div>Будет выглядеть так:</div>
+        <img src="~/wwwroot/img/widgetTop3.png" />
+    </div>
+</div>
+
+<script>
+    window.allcustombinds.push(function () {
+        document.getElementById('forceReload').addEventListener('click', function () {
+            var url = window.location.href;
+            if (url.indexOf('?') > -1) {
+                url += '&recalc'
+            } else {
+                url += '?recalc'
+            }
+            window.location.href = url;
+        });
+
+        document.getElementById('getGroupToken').addEventListener('click', function () {
+            VK.callMethod('showGroupSettingsBox', 64);
+        });
+
+        document.getElementById('updateTopLikers').addEventListener('click',
+            function () {
+                var code = @Html.Raw(Top100BestLikersComponent.GenerateCodeFromModel(Model))
+
+                VK.callMethod('showAppWidgetPreviewBox', 'list', code);
+            });
+    })
+</script>
+
+<style>
+    .likers-table {
+        border-collapse: collapse;
+    }
+
+        .likers-table th {
+            border-bottom: 1px solid #d3d9de;
+            padding-bottom: 20px;
+        }
+
+    .small-header {
+        width: 50px;
+        white-space: nowrap;
+    }
+
+    .user-header {
+        height: 90%;
+        text-align: left;
+    }
+
+    .center {
+        text-align: center;
+    }
+
+    .nowrap {
+        white-space: nowrap;
+    }
+
+    .uicons {
+        height: 60px;
+    }
+
+    .uicon {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+    }
+</style>

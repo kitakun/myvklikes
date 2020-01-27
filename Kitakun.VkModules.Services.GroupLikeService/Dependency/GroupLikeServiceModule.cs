@@ -12,6 +12,11 @@ namespace Kitakun.VkModules.Services.GroupLikeService.Dependency
 				.RegisterType<GroupLikesService>()
 				.As<IGroupLikesService>()
 				.InstancePerLifetimeScope();
-		}
+
+            builder
+                .RegisterType<Top100Service>()
+                .As<ITop100Service>()
+                .InstancePerLifetimeScope();
+        }
 	}
 }

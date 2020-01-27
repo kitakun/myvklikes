@@ -16,19 +16,48 @@
 
 @if (Model.IsAdmin)
 {
-    <div class="admin-panel">
-        <h4 class="admin">Управление</h4>
+    <div class="tabs-block">
+        <button class="tablink s4" onclick="openPage('Home', this)" id="defaultOpen">Лучшие</button>
+        <button class="tablink s4" onclick="openPage('adm', this)">Настройки виджета</button>
+        <button class="tablink s4" onclick="openPage('adm2', this)">Настройки</button>
+    </div>
 
-        @await Component.InvokeAsync(nameof(AdminTitleChangerComponent))
+    <div id="adm" class="tabcontent">
 
-        @await Component.InvokeAsync(nameof(AdminListSetuperComponent))
+        <div class="example">
+            <p>Перед обновлением виджета убедитесь, что все автообновления отключены!</p>
+            <p>Иначе спустя некоторое время виджет сам поменяется.</p>
+        </div>
 
+        <div class="admin-panel">
+
+            @(await Component.InvokeAsync<Kitakun.VkModules.Web.Components.Top100BestLikersAdminComponent>())
+
+            @await Component.InvokeAsync(nameof(AdminTitleChangerComponent))
+
+            @await Component.InvokeAsync(nameof(AdminListSetuperComponent))
+
+        </div>
+    </div>
+
+    <div id="adm2" class="tabcontent">
+        <div class="admin-panel">
+        </div>
     </div>
 }
 
 @if (Model.HasSubscription)
 {
-    @await Component.InvokeAsync(nameof(Top100BestLikersComponent))
+    @if (Model.IsAdmin)
+    {
+        <div id="Home" class="tabcontent">
+            @await Component.InvokeAsync(nameof(Top100BestLikersComponent))
+        </div>
+    }
+    else
+    {
+        @await Component.InvokeAsync(nameof(Top100BestLikersComponent))
+    }
 }
 else
 {
@@ -55,14 +84,66 @@ else
             top: 10px;
             position: relative;
             padding: 2px;
-            border: 1px solid red;
             margin: 2px;
         }
 
-        h4.admin {
-            color: red;
-            padding: 0px;
-            margin: 0px;
+        .s6 {
+            width: calc(50% - 2px);
+        }
+
+        .s4 {
+            width: calc(33% - 2px);
+        }
+
+        .tabs-block {
+            display: inline-block;
+            width: 100%;
+        }
+
+        .tablink {
+            text-align: center;
+            text-decoration: none;
+            background: none;
+            background-color: #5181b8;
+            color: #fff;
+            border: 0;
+            display: inline-block;
+            border-radius: 4px;
+            padding: 7px 16px 8px;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            font-size: 17px;
+        }
+
+            .tablink:hover {
+                background-color: #5b88bd;
+                text-decoration: none;
+            }
+
+        .tabcontent {
+            display: none;
+            height: 100%;
         }
     </style>
 }
+
+<script type="text/javascript">
+    function openPage(pageName, elmnt) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+
+        tablinks = document.getElementsByClassName("tablink");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].style.backgroundColor = "";
+        }
+
+        document.getElementById(pageName).style.display = "block";
+        elmnt.style.backgroundColor = '#4872a3';
+    }
+
+    document.getElementById("defaultOpen").click();
+</script>
