@@ -42,6 +42,7 @@
 
     <div id="adm2" class="tabcontent">
         <div class="admin-panel">
+            @(await Component.InvokeAsync<Kitakun.VkModules.Web.Components.AdminSettingsComponent>())
         </div>
     </div>
 }
@@ -116,10 +117,10 @@ else
             font-size: 17px;
         }
 
-            .tablink:hover {
-                background-color: #5b88bd;
-                text-decoration: none;
-            }
+        .tablink:hover {
+            background-color: #5b88bd;
+            text-decoration: none;
+        }
 
         .tabcontent {
             display: none;

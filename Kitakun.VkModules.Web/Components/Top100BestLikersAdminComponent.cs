@@ -9,6 +9,9 @@
     using Kitakun.VkModules.Web.WebModels;
     using Kitakun.VkModules.Persistance;
 
+    /// <summary>
+    /// Топ 3 виджет - админка
+    /// </summary>
     public class Top100BestLikersAdminComponent : ViewComponent
     {
         private readonly IWebContext _webContext;

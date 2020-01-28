@@ -10,6 +10,9 @@
     using Kitakun.VkModules.Services.Abstractions;
     using Kitakun.VkModules.Core.Models;
 
+    /// <summary>
+    /// Топ 3 виджет
+    /// </summary>
     public sealed class Top100BestLikersComponent : ViewComponent
     {
         private readonly IWebContext _webContext;

@@ -1,0 +1,31 @@
+﻿@model Kitakun.VkModules.Web.WebModels.AdminSettingsComponentModel
+
+<div class="page-block">
+    <h3>Глобальные настройки виджета</h3>
+    <table class="fullwidth">
+        <tr>
+            <td>
+                <label for="appToken"><b>App Token:</b></label>
+                <input id="appToken" type="text" class="singleline-input" placeholder="Введите AppToken..." value="@Model.AppToken" />
+                <div class="example">
+                    <p>Инструкция по получению <b>App Token-а</b>:</p>
+                    <img src="~/wwwroot/img/widgetAppTokenGuide0.png" />
+                    <img src="~/wwwroot/img/widgetAppTokenGuide1.png" />
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td>
+                <label for="txtBestUsers"><b>Текст "Лучшие участники":</b></label>
+                <input id="txtBestUsers" type="text" class="singleline-input" placeholder="Например: Лучшие участники" value="@Model.TopLikersHeaderMessage" />
+            </td>
+        </tr>
+
+    </table>
+
+    <button id='btnSaveChanges' type="submit" class="flat-button">Сохранить изменения</button>
+
+</div>
