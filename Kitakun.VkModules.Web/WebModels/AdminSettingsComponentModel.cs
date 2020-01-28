@@ -5,5 +5,7 @@
         public string AppToken { get; set; }
 
         public string TopLikersHeaderMessage { get; set; }
+
+        public bool EnableAutoupdatingTop3 { get; set; }
     }
 }

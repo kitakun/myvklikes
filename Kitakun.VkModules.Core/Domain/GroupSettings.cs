@@ -17,5 +17,10 @@
 
         [Display(Name = "GroupAppToken - Апи ключ группы, для фонового обновления виджета")]
         public string GroupAppToken { get; set; }
+
+        [Display(Name = "RecuringBackgroundJobId - Системное, не трогать")]
+        public string RecuringBackgroundJobId { get; set; }
+
+        public BackgroundUpdaterType BackgroundJobType { get; set; }
     }
 }

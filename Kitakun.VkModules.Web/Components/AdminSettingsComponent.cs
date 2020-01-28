@@ -35,7 +35,8 @@
             return View(nameof(AdminSettingsComponent), new AdminSettingsComponentModel
             {
                 AppToken = groupSetting.GroupAppToken,
-                TopLikersHeaderMessage = groupSetting.TopLikersHeaderMessage
+                TopLikersHeaderMessage = groupSetting.TopLikersHeaderMessage,
+                EnableAutoupdatingTop3 = groupSetting.BackgroundJobType == Core.Domain.BackgroundUpdaterType.Top3
             });
         }
     }

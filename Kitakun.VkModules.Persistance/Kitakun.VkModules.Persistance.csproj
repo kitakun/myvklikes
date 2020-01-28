@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <LangVersion>7.2</LangVersion>
+    <Configurations>Debug;Release;MIGRATION</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,10 +21,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Kitakun.VkModules.Core\Kitakun.VkModules.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Migrations\" />
   </ItemGroup>
 
   <ItemGroup>

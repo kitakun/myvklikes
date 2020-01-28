@@ -12,8 +12,7 @@ namespace Kitakun.VkModules.Web.Controllers
     using Kitakun.VkModules.Web.Components;
     using Kitakun.VkModules.Core.Models;
 
-    //[EnableCors(WebConstants.AllCorsName)]
-    public class BackgroundUpdater// : Controller
+    public class BackgroundUpdater
     {
         private const string AppToken = "924ddd86924ddd86924ddd86df922afcec9924d924ddd86c9b8b1155b39d3337c8f8840";
         private readonly IGroupLikesService _groupLikeService;

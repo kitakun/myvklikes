@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 #endif
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 using Kitakun.VkModules.Core.Domain;
 
@@ -21,6 +22,7 @@ namespace Kitakun.VkModules.Persistance
                 lvl == LogLevel.Information, true)
         });
 #endif
+        private readonly IConfiguration _configuration;
 
         public DbSet<DataCollection> DataCollections { get; set; }
 
@@ -28,15 +30,23 @@ namespace Kitakun.VkModules.Persistance
 
         public DbSet<GroupSettings> GroupSettings { get; set; }
 
+#if !(MIGRATION)
+        public VkDbContext(IConfiguration configuration)
+        {
+            _configuration = configuration ?? throw new System.ArgumentNullException(nameof(configuration));
+        }
+#endif
+
         protected override void OnConfiguring(DbContextOptionsBuilder options)
             => options
 #if DEBUG
                 .UseLoggerFactory(MyLoggerFactory)
-                .UseNpgsql("Server=localhost;Database=myvklikes;Port=5432;User Id=postgres;Password=keysecret;");
-#elif RELEASE
-                .UseNpgsql("Server=localhost;Database=myvklikes;Port=5432;User Id=liker;Password=keysecret;");
 #endif
-
+#if MIGRATION
+                .UseNpgsql("User ID=migrator;Password=migrator;Host=localhost;Port=5432;Database=diary;Pooling=true;");
+#else
+                .UseNpgsql(_configuration.GetConnectionString("Persistance"));
+#endif
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) =>
             modelBuilder

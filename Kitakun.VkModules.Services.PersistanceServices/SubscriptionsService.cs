@@ -18,7 +18,7 @@
         }
 
         public Task<bool> GroupHasSubscription(long groupId)
-#if RELEASE
+#if !(DEBUG)
              => _dbcontext
                 .Subscriptions
                 .AsNoTracking()

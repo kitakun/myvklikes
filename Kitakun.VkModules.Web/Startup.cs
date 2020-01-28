@@ -6,7 +6,7 @@ namespace Kitakun.VkModules.Web
 #endif
     using Autofac;
     using Hangfire;
-    using Hangfire.MemoryStorage;
+    using Hangfire.PostgreSql;
 
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -41,7 +41,7 @@ namespace Kitakun.VkModules.Web
                 c.AddPolicy(WebConstants.AllCorsName, options => options.AllowAnyOrigin());
             });
 
-            services.AddHangfire(x => x.UseMemoryStorage());
+            services.AddHangfire(x => x.UsePostgreSqlStorage(Configuration.GetConnectionString("HangfireConnection")));
             services.AddHangfireServer();
 #if RELEASE
 			services.AddHsts(options =>

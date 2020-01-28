@@ -1,31 +1,84 @@
 ﻿@model Kitakun.VkModules.Web.WebModels.AdminSettingsComponentModel
+@using Admin = Kitakun.VkModules.Web.Controllers.AdminController;
 
 <div class="page-block">
-    <h3>Глобальные настройки виджета</h3>
-    <table class="fullwidth">
-        <tr>
-            <td>
-                <label for="appToken"><b>App Token:</b></label>
-                <input id="appToken" type="text" class="singleline-input" placeholder="Введите AppToken..." value="@Model.AppToken" />
-                <div class="example">
-                    <p>Инструкция по получению <b>App Token-а</b>:</p>
-                    <img src="~/wwwroot/img/widgetAppTokenGuide0.png" />
-                    <img src="~/wwwroot/img/widgetAppTokenGuide1.png" />
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td>&nbsp;</td>
-        </tr>
-        <tr>
-            <td>
-                <label for="txtBestUsers"><b>Текст "Лучшие участники":</b></label>
-                <input id="txtBestUsers" type="text" class="singleline-input" placeholder="Например: Лучшие участники" value="@Model.TopLikersHeaderMessage" />
-            </td>
-        </tr>
+    @*@using (Html.BeginForm(nameof(Admin.UpdateSettings), nameof(Admin)))*@
+    <form method="post" action="@($"/Admin/UpdateSettings?group_id={Context.Request.Query["group_id"].FirstOrDefault()??string.Empty}")">
+        @Html.AntiForgeryToken()
 
-    </table>
+        <h3>Глобальные настройки виджета</h3>
+        <table class="fullwidth">
+            <tr>
+                <td>
+                    <label for="appToken"><b>App Token:</b></label>
+                    @Html.EditorFor(x => x.AppToken, new { htmlAttributes = new { @class = "singleline-input", placeholder = "Введите AppToken..." } })
+                    <div class="example">
+                        <p>Инструкция по получению <b>App Token-а</b>:</p>
+                        <img src="~/wwwroot/img/widgetAppTokenGuide0.png" />
+                        <img src="~/wwwroot/img/widgetAppTokenGuide1.png" />
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="txtBestUsers"><b>Текст "Лучшие участники":</b></label>
+                    @Html.EditorFor(x => x.TopLikersHeaderMessage, new { htmlAttributes = new { @class = "singleline-input", placeholder = "Например: Лучшие участники" } })
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>
+                    <div>
+                        <div style="display:inline-block">Автообновление ТОП 3:</div>
+                        <div id="inputAutoTop3" style="display:inline-block" class="_ui_toggler ui_toggler"></div>
+                        @Html.CheckBoxFor(x => x.EnableAutoupdatingTop3, new { @id= "EnableAutoupdatingTop3", @class="hide" })
+                    </div>
+                </td>
+            </tr>
 
-    <button id='btnSaveChanges' type="submit" class="flat-button">Сохранить изменения</button>
+        </table>
 
+        <button id='btnSaveChanges' type="submit" class="flat-button">Сохранить изменения</button>
+    </form>
 </div>
+
+<script type="text/javascript">
+    window.allcustombinds.push(function () {
+        var allChecks = {};
+
+        function applyValue(clickableDiv, hiddenInputId) {
+            var chb = document.getElementById(clickableDiv);
+            if (allChecks[hiddenInputId]) {
+                chb.classList.add('on');
+                chb.classList.add('checked');
+                chb.setAttribute("value", "True");
+
+            } else {
+                chb.classList.remove('on');
+                chb.classList.remove('checked');
+                chb.setAttribute("value", "false");
+            }
+        }
+
+        function MakeSwitchable(clickableDiv, hiddenInputId) {
+            allChecks[hiddenInputId] = document.getElementById(hiddenInputId).checked;
+            applyValue(clickableDiv, hiddenInputId);
+            document
+                .getElementById(clickableDiv)
+                .addEventListener('click', function () {
+                    
+                    var newValue = !allChecks[hiddenInputId];
+                    document.getElementById(hiddenInputId).checked = newValue;
+                    allChecks[hiddenInputId] = newValue;
+                    applyValue(clickableDiv, hiddenInputId);
+                });
+        }
+
+        MakeSwitchable('inputAutoTop3', 'EnableAutoupdatingTop3');
+    });
+</script>

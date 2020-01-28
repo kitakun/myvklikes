@@ -2,6 +2,10 @@
     background-color: #fff;
 }
 
+.hide {
+    display: none;
+}
+
 .center {
     text-align: center;
 }
@@ -153,4 +157,44 @@ button {
 
 .singleline-input {
     margin-bottom: 10px;
+}
+
+
+/* vk ui toggler */
+.ui_toggler {
+    margin-top: 4px;
+    width: 28px;
+    height: 9px;
+    border-radius: 45px;
+    background-color: #ced7e0;
+    cursor: pointer;
+}
+
+    .ui_toggler:after {
+        content: '';
+        float: left;
+        position: relative;
+        width: 13px;
+        height: 13px;
+        border-radius: 50%;
+        border: 1px solid #b4bfcc;
+        background-color: #fff;
+        top: -3px;
+        left: 0;
+        transition: left 0.1s ease;
+    }
+
+    .ui_toggler.on {
+        background-color: #bccde0;
+    }
+
+.ui_toggler_wrap .ui_toggler {
+    float: right;
+    margin-top: 3px;
+}
+
+.ui_toggler.on:after {
+    background-color: #5181b8;
+    border-color: #5181b8;
+    left: 13px;
 }
