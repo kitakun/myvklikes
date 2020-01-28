@@ -13,6 +13,7 @@
     using Kitakun.VkModules.Services.Abstractions;
     using Kitakun.VkModules.Web.WebModels;
     using Kitakun.VkModules.Persistance;
+    using Kitakun.VkModules.Web.Extensions;
 
     [AllowAnonymous]
     [EnableCors(WebConstants.AllCorsName)]
@@ -100,7 +101,10 @@
                 await _dbContext.SaveChangesAsync();
             }
 
-            return RedirectToAction(nameof(HomeController.Index), nameof(HomeController).Replace("Controller", ""));
+            return RedirectToAction(
+                nameof(HomeController.Index),
+                nameof(HomeController).Replace("Controller", ""),
+                Request.ToQuery());
         }
     }
 }

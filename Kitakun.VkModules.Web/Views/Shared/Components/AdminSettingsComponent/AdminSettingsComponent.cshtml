@@ -3,7 +3,7 @@
 
 <div class="page-block">
     @*@using (Html.BeginForm(nameof(Admin.UpdateSettings), nameof(Admin)))*@
-    <form method="post" action="@($"/Admin/UpdateSettings?group_id={Context.Request.Query["group_id"].FirstOrDefault()??string.Empty}")">
+    <form method="post" action="@($"/Admin/UpdateSettings{Context.Request.QueryString.ToString()}")">
         @Html.AntiForgeryToken()
 
         <h3>Глобальные настройки виджета</h3>
