@@ -198,3 +198,9 @@ button {
     border-color: #5181b8;
     left: 13px;
 }
+
+/* table */
+tr.active {
+    background: #f5f7fa;
+    border: solid 1px #e7e8ec;
+}

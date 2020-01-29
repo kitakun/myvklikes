@@ -74,7 +74,6 @@
                     groupSetting.RecuringBackgroundJobId = null;
                 }
 
-                const string every15minterCron = "*/15 * * * *";
                 if (!skipEnablingBackgroundJob && groupSetting.GroupId.HasValue)
                 {
                     var groupId = groupSetting.GroupId.Value;
@@ -86,7 +85,7 @@
 
                     groupSetting.RecuringBackgroundJobId = $"RecurringJob={groupId}";
 
-                    RecurringJob.AddOrUpdate(groupSetting.RecuringBackgroundJobId, () => _bgUpdater.Run(groupId), every15minterCron);
+                    RecurringJob.AddOrUpdate(groupSetting.RecuringBackgroundJobId, () => _bgUpdater.Run(groupId), WebConstants.Every15minterCron);
                 }
 
                 if(model.EnableAutoupdatingTop3 == false)

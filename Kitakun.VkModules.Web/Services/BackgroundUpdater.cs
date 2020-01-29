@@ -2,67 +2,72 @@ namespace Kitakun.VkModules.Web.Controllers
 {
     using System;
     using System.Threading.Tasks;
-    using System.Linq;
 
-    using Microsoft.AspNetCore.Mvc;
+    using Hangfire;
+
     using Microsoft.EntityFrameworkCore;
 
     using Kitakun.VkModules.Services.Abstractions;
     using Kitakun.VkModules.Persistance;
     using Kitakun.VkModules.Web.Components;
-    using Kitakun.VkModules.Core.Models;
 
     public class BackgroundUpdater
     {
-        private const string AppToken = "924ddd86924ddd86924ddd86df922afcec9924d924ddd86c9b8b1155b39d3337c8f8840";
         private readonly IGroupLikesService _groupLikeService;
         private readonly IVkDbContext _dbContext;
+        private readonly ITop100Service _top100Service;
 
         public BackgroundUpdater(
             IGroupLikesService groupLikeService,
-            IVkDbContext dbContext)
+            IVkDbContext dbContext,
+            ITop100Service top100Service)
         {
             _groupLikeService = groupLikeService ?? throw new ArgumentNullException(nameof(groupLikeService));
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _top100Service = top100Service ?? throw new ArgumentNullException(nameof(top100Service));
         }
 
-        public async Task Run([FromQuery] long groupId)
+        public async Task Run(long groupId)
         {
             var curDate = DateTime.UtcNow;
 
-            var hasSub = await _dbContext.Subscriptions.AnyAsync(a => a.GroupId == groupId && a.From <= curDate && a.To >= curDate);
-            if (!hasSub)
+            var setting = await _dbContext.GroupSettings
+                .FirstOrDefaultAsync(f => f.GroupId == groupId);
+
+            var hasSub = await _dbContext.Subscriptions
+                .AnyAsync(a => a.GroupId == groupId && a.From <= curDate && a.To >= curDate);
+
+            if(setting == null)
             {
-                //TODO log
                 return;
             }
 
-            var setting = await _dbContext.GroupSettings.FirstOrDefaultAsync(f => f.GroupId == groupId);
-
-            var actualGroupId = setting.ReverseGroup
-                ? groupId * -1
-                : groupId;
-
-            var currentDate = DateTime.Now;
-            var firstDayOfMonth = new DateTime(currentDate.Year, currentDate.Month, 1);
-            var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
-
-            var data = await _groupLikeService.LoadAllLikesForCommunityPostsAsync(AppToken, actualGroupId, firstDayOfMonth, lastDayOfMonth);
-            var top100 = data
-                .OrderByDescending(x => x.Value)
-                .Select(s => s.Key)
-                .Take(100)
-                .ToArray();
-            var model = new Top100BestLikersModel
+            if (!hasSub)
             {
-                Likes = data,
-                Top100 = top100,
-                TopUsersTitleText = setting.TopLikersHeaderMessage
-            };
+                // Disable auto-updating
+                setting.BackgroundJobType = Core.Domain.BackgroundUpdaterType.Undefined;
+                RecurringJob.RemoveIfExists(setting.RecuringBackgroundJobId);
+                setting.RecuringBackgroundJobId = null;
+                await _dbContext.SaveChangesAsync();
+            }
+            else
+            {
+                var modelTask = _top100Service.LoadTop100(groupId, true);
+                var vkApiTask = _groupLikeService.GetApi(setting.GroupAppToken);
 
-            var vk = await _groupLikeService.GetApi(setting.GroupAppToken);
-            var code = Top100BestLikersComponent.GenerateCodeFromModelForApi(model);
-            await vk.AppWidgets.UpdateAsync(code, "list");
+                await Task.WhenAll(modelTask, vkApiTask);
+
+                var model = modelTask.Result;
+                var vk = vkApiTask.Result;
+
+                switch (setting.BackgroundJobType)
+                {
+                    case Core.Domain.BackgroundUpdaterType.Top3:
+                        var top3VkCode = Top100BestLikersComponent.GenerateCodeFromModelForApi(model);
+                        await vk.AppWidgets.UpdateAsync(top3VkCode, "list");
+                        break;
+                }
+            }
         }
     }
 }

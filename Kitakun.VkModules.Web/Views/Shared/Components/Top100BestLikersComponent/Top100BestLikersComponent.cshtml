@@ -2,6 +2,7 @@
 
 @{
     var top3Array = Model.Top100.Take(3).ToArray();
+    var curUserId = Context.Request.Query.TryGetValue("viewer_id", out var rawViewerId) ? long.Parse(rawViewerId.First()) : -1;
 }
 
 <div class="page-block">
@@ -17,7 +18,7 @@
         <tbody class="likers">
             @if (Model.Top100.Length > 0)
             {
-                <tr>
+                <tr class="@(curUserId == Model.Top100[0] ? "active" : string.Empty)">
                     <td class="uicons center nowrap">🔥🔥🔥</td>
                     <td class="center"><img src="@Model.UsersInfo[Model.Top100[0]].imgUrl" class="uicon" /></td>
                     <td>@Model.UsersInfo[Model.Top100[0]].uName</td>
@@ -26,7 +27,7 @@
             }
             @if (Model.Top100.Length > 1)
             {
-                <tr>
+                <tr class="@(curUserId == Model.Top100[1] ? "active" : string.Empty)">
                     <td class="uicons center nowrap">🌟</td>
                     <td class="center"><img src="@Model.UsersInfo[Model.Top100[1]].imgUrl" class="uicon" /></td>
                     <td>@Model.UsersInfo[Model.Top100[1]].uName</td>
@@ -35,7 +36,7 @@
             }
             @if (Model.Top100.Length > 2)
             {
-                <tr>
+                <tr  class="@(curUserId == Model.Top100[2] ? "active" : string.Empty)">
                     <td class="uicons center nowrap">⭐</td>
                     <td class="center"><img src="@Model.UsersInfo[Model.Top100[2]].imgUrl" class="uicon" /></td>
                     <td>@Model.UsersInfo[Model.Top100[2]].uName</td>
@@ -46,7 +47,7 @@
             {
                 for (var i = 3; i < Model.Top100.Length; i++)
                 {
-                    <tr>
+                    <tr  class="@(curUserId == Model.Top100[i] ? "active" : string.Empty)">
                         <td class="uicons center nowrap">@(i + 1)</td>
                         <td class="center"><img src="@Model.UsersInfo[Model.Top100[i]].imgUrl" class="uicon" /></td>
                         <td>@Model.UsersInfo[Model.Top100[i]].uName</td>
@@ -63,7 +64,7 @@
         border-collapse: collapse;
     }
 
-        .likers-table th {
+    .likers-table th {
             border-bottom: 1px solid #d3d9de;
             padding-bottom: 20px;
         }

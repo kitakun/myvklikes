@@ -52,11 +52,11 @@
 
             _isVkFrameValid = new Lazy<bool>(() =>
             {
-                var fine = _httpContextAccessor.HttpContext.Request.Query.TryGetValue("api_id", out var apiIdQuery);
-                fine |= _httpContextAccessor.HttpContext.Request.Query.TryGetValue("viewer_id", out var viewerIdQuery);
-                fine |= _httpContextAccessor.HttpContext.Request.Query.TryGetValue("auth_key", out var authKeyQuery);
+                var notFine = !_httpContextAccessor.HttpContext.Request.Query.TryGetValue("api_id", out var apiIdQuery);
+                notFine |= !notFine && !_httpContextAccessor.HttpContext.Request.Query.TryGetValue("viewer_id", out var viewerIdQuery);
+                notFine |= !notFine && !_httpContextAccessor.HttpContext.Request.Query.TryGetValue("auth_key", out var authKeyQuery);
 
-                if (fine)
+                if (notFine == false)
                 {
                     var md5 = CreateMD5($"{apiIdQuery}_{viewerIdQuery}_{_config.GetValue<string>("VkAppSecret")}");
 

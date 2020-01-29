@@ -6,6 +6,7 @@
     using System.Linq;
 
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Configuration;
 
     using Kitakun.VkModules.Core.Models;
     using Kitakun.VkModules.Persistance;
@@ -14,25 +15,27 @@
 
     public class Top100Service : ITop100Service
     {
-        private const string AppToken = "924ddd86924ddd86924ddd86df922afcec9924d924ddd86c9b8b1155b39d3337c8f8840";
-
         private readonly IVkDbContext _dbContext;
         private readonly IDataCollectionsService _dataCollectionsService;
         private readonly IGroupLikesService _likeService;
+        private readonly IConfiguration _configuration;
 
         public Top100Service(
             IVkDbContext dbContext,
             IDataCollectionsService dataCollectionsService,
-            IGroupLikesService likesService)
+            IGroupLikesService likesService,
+            IConfiguration configuration)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _dataCollectionsService = dataCollectionsService ?? throw new ArgumentNullException(nameof(dataCollectionsService));
             _likeService = likesService ?? throw new ArgumentNullException(nameof(likesService));
+            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         public async Task<Top100BestLikersModel> LoadTop100(long groupId, bool forceRecalc)
         {
             // const's
+            var appToken = _configuration.GetValue<string>("VkAppToken");
             var currentDate = DateTime.Now;
             var firstDayOfMonth = new DateTime(currentDate.Year, currentDate.Month, 1);
             var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
@@ -69,7 +72,7 @@
                 // Load from api & save if we don't have it
                 if (forceRecalc || calculationData == null)
                 {
-                    calculationData = await _likeService.LoadAllLikesForCommunityPostsAsync(AppToken, groupId, firstDayOfMonth, lastDayOfMonth);
+                    calculationData = await _likeService.LoadAllLikesForCommunityPostsAsync(appToken, groupId, firstDayOfMonth, lastDayOfMonth);
                     await _dataCollectionsService.SaveGroupLikesDataAsync(groupId, firstDayOfMonth, lastDayOfMonth, calculationData, forceRecalc);
                 }
             }
@@ -87,7 +90,7 @@
             // if we have any top100 -> load theirs profile pictures
             if (top100.Length > 0)
             {
-                var involvedUsers = await _likeService.GetUsersPhotoAndNames(AppToken, top100);
+                var involvedUsers = await _likeService.GetUsersPhotoAndNames(appToken, top100);
                 model.UsersInfo = involvedUsers;
             }
 

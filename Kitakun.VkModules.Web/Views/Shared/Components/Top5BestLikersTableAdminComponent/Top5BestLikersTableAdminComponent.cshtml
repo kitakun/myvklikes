@@ -1,0 +1,117 @@
+﻿@model Kitakun.VkModules.Web.WebModels.Top100BestLikersAdminModel
+@using Top5BestLikersTableAdminComponent = Kitakun.VkModules.Web.Components.Top5BestLikersTableAdminComponent;
+
+<div class="page-block">
+    <h3>Пятеро лучших</h3>
+    <div class="admin-panel">
+        <div class="example">
+            <div>Перерасчет происходит 1 раз в день при первом открытии этого фрейма ИЛИ по нажатию кнопку "пересчет"</div>
+            <button id="forceReload">Пересчет</button>
+        </div>
+        <p><b>Заголовок:</b> @Model.TopUsersTitleText</p>
+        <button id='updateTop5Likers' class="flat-button">Обновить виджет в сообществе прямо сейчас</button>
+        <button id='updateTop5Likers2' class="flat-button">test</button>
+    </div>
+
+    <div class="example">
+        <div>Будет выглядеть так:</div>
+        @*<img src="~/wwwroot/img/widgetTop3.png" />*@
+    </div>
+</div>
+
+<script>
+    window.allcustombinds.push(function () {
+        document.getElementById('forceReload').addEventListener('click', function () {
+            var url = window.location.href;
+            if (url.indexOf('?') > -1) {
+                url += '&recalc'
+            } else {
+                url += '?recalc'
+            }
+            window.location.href = url;
+        });
+        
+        document.getElementById('updateTop5Likers').addEventListener('click',
+            function () {
+                var code = @Html.Raw(Top5BestLikersTableAdminComponent.GenerateCodeFromModel(Model))
+
+                VK.callMethod('showAppWidgetPreviewBox', 'table', code);
+            });
+
+        document.getElementById('updateTop5Likers2').addEventListener('click',
+            function () {
+                    VK.callMethod('showAppWidgetPreviewBox', 'table', `
+{
+    "title": "My Table",
+    "title_url": "https://vk.com/lentach",
+    "title_counter": 31,
+    "more": "Посмотреть все результаты",
+    "more_url": "https://vk.com/necrozw",
+    "head": [{
+        "text": "Название первой колонки"
+    }, {
+        "text": "Название второй колонки",
+        "align": "center"
+    }],
+    "body": [
+        [{
+            "text": "Это первая ячейка первой строки",
+            "icon_id": "3484735_23434324"
+        },
+        {
+            "text": "Это вторая ячейка первой строки",
+            "url": "https://vk.com/jeremyman"
+        }],
+        [{
+            "text": "Это первая ячейка второй строки",
+            "icon_id": "3484735_23434324"
+        },
+        {
+            "text": "Это вторая ячейка второй строки",
+            "url": "https://vk.com/lentach"
+        }
+        ]
+    ]
+}`);
+            });
+    })
+</script>
+
+<style>
+    .likers-table {
+        border-collapse: collapse;
+    }
+
+    .likers-table th {
+        border-bottom: 1px solid #d3d9de;
+        padding-bottom: 20px;
+    }
+
+    .small-header {
+        width: 50px;
+        white-space: nowrap;
+    }
+
+    .user-header {
+        height: 90%;
+        text-align: left;
+    }
+
+    .center {
+        text-align: center;
+    }
+
+    .nowrap {
+        white-space: nowrap;
+    }
+
+    .uicons {
+        height: 60px;
+    }
+
+    .uicon {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+    }
+</style>

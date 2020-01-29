@@ -33,6 +33,8 @@
 
             @(await Component.InvokeAsync<Kitakun.VkModules.Web.Components.Top100BestLikersAdminComponent>())
 
+            @(await Component.InvokeAsync<Kitakun.VkModules.Web.Components.Top5BestLikersTableAdminComponent>())
+
             @await Component.InvokeAsync(nameof(AdminTitleChangerComponent))
 
             @await Component.InvokeAsync(nameof(AdminListSetuperComponent))

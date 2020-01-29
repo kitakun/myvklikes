@@ -14,7 +14,8 @@ namespace Kitakun.VkModules.Services.GroupLikeService
 
 	using Kitakun.VkModules.Services.Abstractions;
 
-	internal class GroupLikesService : IGroupLikesService
+    // https://vk.com/dev/objects/appWidget
+    internal class GroupLikesService : IGroupLikesService
 	{
 		private VkApi _sharedVkApi;
 		private string _sharedForToken;
