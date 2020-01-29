@@ -10,12 +10,11 @@
         </div>
         <p><b>Заголовок:</b> @Model.TopUsersTitleText</p>
         <button id='updateTop5Likers' class="flat-button">Обновить виджет в сообществе прямо сейчас</button>
-        <button id='updateTop5Likers2' class="flat-button">test</button>
     </div>
 
     <div class="example">
         <div>Будет выглядеть так:</div>
-        @*<img src="~/wwwroot/img/widgetTop3.png" />*@
+        <img src="~/wwwroot/img/widgetTop5.png" />
     </div>
 </div>
 
@@ -33,46 +32,9 @@
         
         document.getElementById('updateTop5Likers').addEventListener('click',
             function () {
-                var code = @Html.Raw(Top5BestLikersTableAdminComponent.GenerateCodeFromModel(Model))
+                var code = @Html.Raw(Top5BestLikersTableAdminComponent.GenerateCodeFromModel(Model));
 
                 VK.callMethod('showAppWidgetPreviewBox', 'table', code);
-            });
-
-        document.getElementById('updateTop5Likers2').addEventListener('click',
-            function () {
-                    VK.callMethod('showAppWidgetPreviewBox', 'table', `
-{
-    "title": "My Table",
-    "title_url": "https://vk.com/lentach",
-    "title_counter": 31,
-    "more": "Посмотреть все результаты",
-    "more_url": "https://vk.com/necrozw",
-    "head": [{
-        "text": "Название первой колонки"
-    }, {
-        "text": "Название второй колонки",
-        "align": "center"
-    }],
-    "body": [
-        [{
-            "text": "Это первая ячейка первой строки",
-            "icon_id": "3484735_23434324"
-        },
-        {
-            "text": "Это вторая ячейка первой строки",
-            "url": "https://vk.com/jeremyman"
-        }],
-        [{
-            "text": "Это первая ячейка второй строки",
-            "icon_id": "3484735_23434324"
-        },
-        {
-            "text": "Это вторая ячейка второй строки",
-            "url": "https://vk.com/lentach"
-        }
-        ]
-    ]
-}`);
             });
     })
 </script>

@@ -48,21 +48,39 @@
 
         // VK JNET Generator methods
 
-        public static string GenerateCodeFromModel(Top100BestLikersAdminModel model, bool forApi = false)
+        public static string GenerateCodeFromModel(Top100BestLikersAdminModel model, bool isApi = false)
         {
             var sb = new StringBuilder();
+            var apiPref = isApi ? string.Empty : "\\";
 
-            sb.AppendLine("'\\");
-            sb.AppendLine($"var widTitle = \"{model.TopUsersTitleText}\";\\");
-            sb.AppendLine($"var top3Usrs = [{string.Join(',', model.Top100.Take(5))}];\\");
-            sb.AppendLine($"var top3likers = [{GetTopRatesString(model)}];\\");
-            sb.AppendLine("var loadedUsrs = API.users.get({ user_ids: top3Usrs, fields: \"sex\" });\\");
-            sb.AppendLine("return {\\");
-            sb.AppendLine("\"title\": widTitle,\\");
-            sb.AppendLine("\"rows\": [\\");
-            sb.AppendLine($"{GenerateLikerRowForApi(model, false)}\\");
-            sb.AppendLine("]\\");
+            sb.AppendLine($"'{apiPref}");
+            sb.AppendLine($"var widTitle = \"{model.TopUsersTitleText}\";{apiPref}");
+            sb.AppendLine($"var top5Usrs = [{string.Join(',', model.Top100.Take(5))}];{apiPref}");
+            sb.AppendLine($"var top5likers = [{GetTopRatesString(model)}];{apiPref}");
+            sb.AppendLine($"var loadedUsrs = API.users.get({{ user_ids: top5Usrs, fields: \"sex\" }});{apiPref}");
+            sb.AppendLine($"return {{{apiPref}");
+            sb.AppendLine($"\"title\": widTitle,{apiPref}");
+            //head
+            sb.AppendLine($"\"head\": [{apiPref}");
+            sb.AppendLine($"{{\"text\": \"Пользователь\"}},{apiPref}");
+            sb.AppendLine($"{{\"text\": \"Баллы\", \"align\": \"center\" }},{apiPref}");
+            sb.AppendLine($"],{apiPref}");
+
+            sb.AppendLine($"\"body\": [{apiPref}");
+            sb.AppendLine($"{GenerateLikerRowForApi(model, false)}{apiPref}");
+            sb.AppendLine($"]{apiPref}");
             sb.AppendLine("};'");
+
+            return sb.ToString();
+        }
+
+        internal static string AppendToAppUrlAtBottom(Top100BestLikersAdminModel model, bool isApi = false)
+        {
+            var sb = new StringBuilder();
+            var apiPref = isApi ? string.Empty : "\\";
+
+            sb.AppendLine($"\"more\": \"Посмотреть всю таблицу\",{apiPref}");
+            sb.AppendLine($"\"more_url\": \"https://vk.com/app6758762_-178955520\",{apiPref}");
 
             return sb.ToString();
         }
@@ -71,7 +89,7 @@
         {
             var sb = new StringBuilder();
             var first = true;
-            for (var i = 0; i < 3 && i < model.Top100.Length; i++)
+            for (var i = 0; i < 5 && i < model.Top100.Length; i++)
             {
                 if (first)
                 {
@@ -90,18 +108,23 @@
         {
             // Generate VK-API-JSON string for list control
             var sb = new StringBuilder();
-            var apiPref = isApi ? "\\" : string.Empty;
-            for (int i = 0; i < 3; i++)
+            var apiPref = isApi ? string.Empty : "\\";
+            for (int i = 0; i < 5; i++)
             {
                 if (model.Top100.Length >= i + 1)
                 {
-                    bool hasNext = model.Top100.Length >= i + 2 && i != 2;
+                    bool hasNext = model.Top100.Length >= i + 4 && i != 4;
+                    sb.AppendLine($"[{{{apiPref}");
+                    sb.AppendLine($"\"text\": loadedUsrs[{i}][\"last_name\"] + \" \" + loadedUsrs[{i}][\"first_name\"],{apiPref}");
+                    sb.AppendLine($"\"url\": \"https://vk.com/id\" + loadedUsrs[{i}].id,{apiPref}");
+                    sb.AppendLine($"\"icon_id\": \"id\" + loadedUsrs[{i}].id{apiPref}");
+                    sb.AppendLine($"}},{apiPref}");
+
                     sb.AppendLine($"{{{apiPref}");
-                    sb.AppendLine($"\"title\": loadedUsrs[{i}][\"last_name\"] + \" \" + loadedUsrs[{i}][\"first_name\"],{apiPref}");
-                    sb.AppendLine($"\"title_url\": \"https://vk.com/id\" + loadedUsrs[{i}].id,{apiPref}");
-                    sb.AppendLine($"\"icon_id\": \"id\" + loadedUsrs[{i}].id,{apiPref}");
-                    sb.AppendLine($"\"descr\": \"Лайков: \" + top3likers[{i}]{apiPref}");
-                    sb.AppendFormat("{1}{0}{3}{2}", (hasNext ? "," : ""), "}", Environment.NewLine, apiPref);
+                    sb.AppendLine($"\"text\": top5likers[{i}]{apiPref}");
+                    sb.AppendLine($"}}]{apiPref}");
+
+                    sb.AppendFormat($"{(hasNext ? $",{apiPref}" : "")}");
                 }
             }
             return sb.ToString();
