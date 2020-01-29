@@ -2,9 +2,11 @@
 {
     using System;
     using System.Linq;
+    using System.Text;
 
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Caching.Memory;
+    using Microsoft.Extensions.Configuration;
 
     using Kitakun.VkModules.Services.Abstractions;
     using Kitakun.VkModules.Persistance;
@@ -17,7 +19,7 @@
         private readonly Lazy<bool> _isAdmin = null;
         private readonly Lazy<bool> _isUltraAdmin = null;
         private readonly Lazy<long> _groupId = null;
-        private readonly Lazy<string> _vkAccessToken = null;
+        private readonly Lazy<bool> _isVkFrameValid = null;
         private readonly Lazy<long> _actualUserId = null;
 
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -25,42 +27,50 @@
         private readonly ISessionSecretGenerator _sessionSecret;
         private readonly Lazy<IGroupLikesService> _lazyGroupLikesService;
         private readonly IMemoryCache _memoryCache;
+        private readonly IConfiguration _config;
 
         public bool IsAdmin => _isAdmin.Value;
         public bool IsUltraAdmin => _isUltraAdmin.Value;
         public long GroupId => _groupId.Value;
-        public string VkAccessToken => _vkAccessToken.Value;
+        public bool IsVkFrameValid => _isVkFrameValid.Value;
 
         public WebContext(
             IHttpContextAccessor httpContextAccessor,
             IVkDbContext dbContext,
             ISessionSecretGenerator sessionSecret,
             Lazy<IGroupLikesService> lazyGroupLikesService,
-            IMemoryCache memoryCache)
+            IMemoryCache memoryCache,
+            IConfiguration config
+            )
         {
             _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _sessionSecret = sessionSecret ?? throw new ArgumentNullException(nameof(sessionSecret));
             _lazyGroupLikesService = lazyGroupLikesService ?? throw new ArgumentNullException(nameof(lazyGroupLikesService));
             _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
+            _config = config ?? throw new ArgumentNullException(nameof(config));
 
-            _vkAccessToken = new Lazy<string>(() =>
+            _isVkFrameValid = new Lazy<bool>(() =>
             {
-                if (_httpContextAccessor.HttpContext.Request.Query.TryGetValue("access_token", out var accToken))
+                var fine = _httpContextAccessor.HttpContext.Request.Query.TryGetValue("api_id", out var apiIdQuery);
+                fine |= _httpContextAccessor.HttpContext.Request.Query.TryGetValue("viewer_id", out var viewerIdQuery);
+                fine |= _httpContextAccessor.HttpContext.Request.Query.TryGetValue("auth_key", out var authKeyQuery);
+
+                if (fine)
                 {
-                    return accToken[0].ToString();
+                    var md5 = CreateMD5($"{apiIdQuery}_{viewerIdQuery}_{_config.GetValue<string>("VkAppSecret")}");
+
+                    return authKeyQuery.ToString().Equals(md5, StringComparison.OrdinalIgnoreCase);
                 }
 
-                return string.Empty;
+                return false;
             });
 
-            _actualUserId = new Lazy<long>(() => _memoryCache.GetOrCreate($"VkAccessToken={VkAccessToken}", (e) =>
+            _actualUserId = new Lazy<long>(() => _memoryCache.GetOrCreate($"VkAccessToken={IsVkFrameValid}", (e) =>
             {
-                if (!string.IsNullOrEmpty(VkAccessToken))
+                if (IsVkFrameValid && _httpContextAccessor.HttpContext.Request.Query.TryGetValue("viewer_id", out var viewerIdQuery))
                 {
-                    var vkaccess = _lazyGroupLikesService.Value.GetApi(VkAccessToken).GetAwaiter().GetResult();
-                    var user = vkaccess.Users.Get(Enumerable.Empty<long>());
-                    return user.FirstOrDefault()?.Id ?? 0;
+                    return long.Parse(viewerIdQuery);
                 }
                 return 0;
             }));
@@ -125,6 +135,22 @@
             }
 
             return false;
+        }
+
+        private static string CreateMD5(string input)
+        {
+            using (var md5 = System.Security.Cryptography.MD5.Create())
+            {
+                byte[] inputBytes = Encoding.ASCII.GetBytes(input);
+                byte[] hashBytes = md5.ComputeHash(inputBytes);
+
+                var sb = new StringBuilder();
+                for (int i = 0; i < hashBytes.Length; i++)
+                {
+                    sb.Append(hashBytes[i].ToString("X2"));
+                }
+                return sb.ToString();
+            }
         }
     }
 }

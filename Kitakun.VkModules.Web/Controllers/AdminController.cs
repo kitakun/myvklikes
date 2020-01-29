@@ -78,10 +78,6 @@
                 if (!skipEnablingBackgroundJob && groupSetting.GroupId.HasValue)
                 {
                     var groupId = groupSetting.GroupId.Value;
-                    if (groupSetting.ReverseGroup)
-                    {
-                        groupId *= -1;
-                    }
 
                     if (model.EnableAutoupdatingTop3)
                     {

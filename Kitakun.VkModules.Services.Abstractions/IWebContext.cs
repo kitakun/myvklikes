@@ -8,6 +8,9 @@
 
         long GroupId { get; }
 
-        string VkAccessToken { get; }
+        /// <summary>
+        /// Is md5 of auth_key correct (anti-hack protection)
+        /// </summary>
+        bool IsVkFrameValid { get; }
     }
 }

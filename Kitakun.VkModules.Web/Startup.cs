@@ -41,6 +41,8 @@ namespace Kitakun.VkModules.Web
                 c.AddPolicy(WebConstants.AllCorsName, options => options.AllowAnyOrigin());
             });
 
+            services.AddAntiforgery(o => o.SuppressXFrameOptionsHeader = true);
+
             services.AddHangfire(x => x.UsePostgreSqlStorage(Configuration.GetConnectionString("HangfireConnection")));
             services.AddHangfireServer();
 #if RELEASE
