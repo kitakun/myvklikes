@@ -21,6 +21,9 @@
         [Display(Name = "RecuringBackgroundJobId - Системное, не трогать")]
         public string RecuringBackgroundJobId { get; set; }
 
+        [Display(Name = "LastRunnedJobId - Системное, не трогать")]
+        public string LastRunnedJobId { get; set; }
+
         public BackgroundUpdaterType BackgroundJobType { get; set; }
     }
 }

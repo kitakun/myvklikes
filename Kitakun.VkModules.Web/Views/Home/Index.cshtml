@@ -14,7 +14,7 @@
     <h2>Лучше лайкатели</h2>
 </div>
 
-@if (Model.IsAdmin)
+@if (Model.IsAdmin && Model.HasSubscription)
 {
     <div class="tabs-block">
         <button class="tablink s4" onclick="openPage('Home', this)" id="defaultOpen">Лучшие</button>
@@ -66,7 +66,7 @@ else
 {
     @if (Model.IsAdmin)
     {
-        <div class="admin-panel">
+        <div class="admin-panel center">
             <p>У вас нет подписки или она закончилась :с</p>
             <p>Свяжитесь с администратором виджета</p>
         </div>

@@ -43,7 +43,7 @@ namespace Kitakun.VkModules.Persistance
                 .UseLoggerFactory(MyLoggerFactory)
 #endif
 #if MIGRATION
-                .UseNpgsql("User ID=migrator;Password=migrator;Host=localhost;Port=5432;Database=diary;Pooling=true;");
+                .UseNpgsql("User ID=migrator;Password=migrator;Host=localhost;Port=5432;Database=myvklikes;Pooling=true;");
 #else
                 .UseNpgsql(_configuration.GetConnectionString("Persistance"));
 #endif

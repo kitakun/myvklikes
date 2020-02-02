@@ -38,7 +38,7 @@
             var appToken = _configuration.GetValue<string>("VkAppToken");
             var currentDate = DateTime.Now;
             var firstDayOfMonth = new DateTime(currentDate.Year, currentDate.Month, 1);
-            var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+            var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddSeconds(-1);
 
             var model = new Top100BestLikersModel
             {

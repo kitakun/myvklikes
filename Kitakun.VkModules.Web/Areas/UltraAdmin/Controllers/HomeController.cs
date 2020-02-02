@@ -25,16 +25,14 @@
 
         private readonly IWebContext _webContext;
         private readonly VkDbContext _dbContext;
-        private readonly BackgroundUpdater _bgUpdater;
+        private readonly BackgroundUpdater _bgUpdater = default;
 
         public HomeController(
             IWebContext webContext,
-            VkDbContext dbContext,
-            BackgroundUpdater bgUpdater)
+            VkDbContext dbContext)
         {
             _webContext = webContext ?? throw new ArgumentNullException(nameof(webContext));
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-            this._bgUpdater = bgUpdater ?? throw new ArgumentNullException(nameof(bgUpdater));
         }
 
         [HttpGet]
@@ -166,7 +164,7 @@
             for (var i = 0; i < groupIdsWithToken.Length; i++)
             {
                 const string every15minterCron = "*/15 * * * *";
-                RecurringJob.AddOrUpdate(() => _bgUpdater.Run(groupIdsWithToken[i]), every15minterCron);
+                RecurringJob.AddOrUpdate(() => _bgUpdater.Run(groupIdsWithToken[i], null), every15minterCron);
             }
 
             return Ok("done");

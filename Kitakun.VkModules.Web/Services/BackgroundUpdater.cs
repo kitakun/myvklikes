@@ -4,12 +4,14 @@ namespace Kitakun.VkModules.Web.Controllers
     using System.Threading.Tasks;
 
     using Hangfire;
+    using Hangfire.Server;
 
     using Microsoft.EntityFrameworkCore;
 
     using Kitakun.VkModules.Services.Abstractions;
     using Kitakun.VkModules.Persistance;
     using Kitakun.VkModules.Web.Components;
+    using Kitakun.VkModules.Core.Extensions;
 
     public class BackgroundUpdater
     {
@@ -27,20 +29,32 @@ namespace Kitakun.VkModules.Web.Controllers
             _top100Service = top100Service ?? throw new ArgumentNullException(nameof(top100Service));
         }
 
-        public async Task Run(long groupId)
+        public async Task Run(long groupId, PerformContext hfContext)
         {
             var curDate = DateTime.UtcNow;
+            var setting = default(Core.Domain.GroupSettings);
 
-            var setting = await _dbContext.GroupSettings
-                .FirstOrDefaultAsync(f => f.GroupId == groupId);
+            using (var locker = await KeyLocker<long>.LockAsync(groupId))
+            {
+                setting = await _dbContext.GroupSettings
+                    .FirstOrDefaultAsync(f => f.GroupId == groupId);
+
+                if (setting == null)
+                    return;
+
+                var currentJobId = hfContext.BackgroundJob.Id;
+
+                // prevent multiple same jobs
+                if (!string.IsNullOrEmpty(setting.LastRunnedJobId)
+                    && currentJobId != setting.LastRunnedJobId)
+                    return;
+
+                setting.LastRunnedJobId = currentJobId;
+                await _dbContext.SaveChangesAsync();
+            }
 
             var hasSub = await _dbContext.Subscriptions
                 .AnyAsync(a => a.GroupId == groupId && a.From <= curDate && a.To >= curDate);
-
-            if(setting == null)
-            {
-                return;
-            }
 
             if (!hasSub)
             {
@@ -48,6 +62,8 @@ namespace Kitakun.VkModules.Web.Controllers
                 setting.BackgroundJobType = Core.Domain.BackgroundUpdaterType.Undefined;
                 RecurringJob.RemoveIfExists(setting.RecuringBackgroundJobId);
                 setting.RecuringBackgroundJobId = null;
+                setting.LastRunnedJobId = null;
+
                 await _dbContext.SaveChangesAsync();
             }
             else
@@ -56,6 +72,9 @@ namespace Kitakun.VkModules.Web.Controllers
                 var vkApiTask = _groupLikeService.GetApi(setting.GroupAppToken);
 
                 await Task.WhenAll(modelTask, vkApiTask);
+
+                setting.LastRunnedJobId = null;
+                await _dbContext.SaveChangesAsync();
 
                 var model = modelTask.Result;
                 var vk = vkApiTask.Result;

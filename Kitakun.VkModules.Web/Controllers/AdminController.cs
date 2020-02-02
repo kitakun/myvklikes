@@ -85,7 +85,7 @@
 
                     groupSetting.RecuringBackgroundJobId = $"RecurringJob={groupId}";
 
-                    RecurringJob.AddOrUpdate(groupSetting.RecuringBackgroundJobId, () => _bgUpdater.Run(groupId), WebConstants.Every15minterCron);
+                    RecurringJob.AddOrUpdate(groupSetting.RecuringBackgroundJobId, () => _bgUpdater.Run(groupId, null), WebConstants.Every15minterCron);
                 }
 
                 if(model.EnableAutoupdatingTop3 == false)

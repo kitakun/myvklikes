@@ -37,7 +37,7 @@ namespace Kitakun.VkModules.Services.GroupLikeService
 			_sharedForToken = token;
 			_sharedVkApi = api;
 
-			return api;
+            return api;
 		}
 
 		public async Task<IDictionary<long, int>> LoadAllLikesForCommunityPostsAsync(
