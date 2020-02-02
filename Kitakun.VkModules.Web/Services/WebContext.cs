@@ -90,20 +90,20 @@
                 return false;
             });
 
-            _actualUserId = new Lazy<long>(() => _memoryCache.GetOrCreate($"VkAccessToken={IsVkFrameValid}", (e) =>
+            _actualUserId = new Lazy<long>(() =>
             {
                 if (IsVkFrameValid && _httpContextAccessor.HttpContext.Request.Query.TryGetValue("vk_user_id", out var viewerIdQuery))
                 {
                     return long.Parse(viewerIdQuery);
                 }
                 return 0;
-            }));
+            });
 
             _isAdmin = new Lazy<bool>(() =>
             {
                 var viewerId = _actualUserId.Value;
 
-                return _memoryCache.GetOrCreate($"IsViewerAdmin={viewerId}", (e) =>
+                var isAdmi =  _memoryCache.GetOrCreate($"IsViewerAdmin={viewerId}", (e) =>
                 {
                     if (_httpContextAccessor.HttpContext.Request.Query.TryGetValue("vk_group_id", out var groupIds))
                     {
@@ -125,6 +125,7 @@
 
                     return false;
                 });
+                return isAdmi;
             });
 
             _isUltraAdmin = new Lazy<bool>(() =>

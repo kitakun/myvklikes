@@ -43,7 +43,6 @@
                 : NotFound();
 
         [HttpPost]
-        [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> UpdateSettings([FromForm] AdminSettingsComponentModel model)
         {
             var groupSetting = await _dbContext
@@ -67,6 +66,12 @@
                                 skipEnablingBackgroundJob = true;
                             }
                             break;
+                        case Core.Domain.BackgroundUpdaterType.Top5:
+                            if (!model.EnableAutoupdatingTop5)
+                            {
+                                skipEnablingBackgroundJob = true;
+                            }
+                            break;
                     }
 
                     // Remove previous work
@@ -83,12 +88,17 @@
                         groupSetting.BackgroundJobType = Core.Domain.BackgroundUpdaterType.Top3;
                     }
 
+                    if (model.EnableAutoupdatingTop5)
+                    {
+                        groupSetting.BackgroundJobType = Core.Domain.BackgroundUpdaterType.Top5;
+                    }
+
                     groupSetting.RecuringBackgroundJobId = $"RecurringJob={groupId}";
 
                     RecurringJob.AddOrUpdate(groupSetting.RecuringBackgroundJobId, () => _bgUpdater.Run(groupId, null), WebConstants.Every15minterCron);
                 }
 
-                if(model.EnableAutoupdatingTop3 == false)
+                if(model.EnableAutoupdatingTop3 == false && model.EnableAutoupdatingTop5 == false)
                 {
                     groupSetting.BackgroundJobType = Core.Domain.BackgroundUpdaterType.Undefined;
                 }
