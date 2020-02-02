@@ -86,6 +86,7 @@
 
             model.Likes = calculationData;
             model.Top100 = top100;
+            model.GroupUrlId = groupId.ToString();
 
             // if we have any top100 -> load theirs profile pictures
             if (top100.Length > 0)

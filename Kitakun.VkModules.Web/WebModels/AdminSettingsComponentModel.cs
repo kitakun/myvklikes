@@ -7,5 +7,7 @@
         public string TopLikersHeaderMessage { get; set; }
 
         public bool EnableAutoupdatingTop3 { get; set; }
+
+        public bool EnableAutoupdatingTop5 { get; set; }
     }
 }

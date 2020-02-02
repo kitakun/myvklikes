@@ -40,6 +40,7 @@
                 Likes = model.Likes,
                 Top100 = model.Top100,
                 UsersInfo = model.UsersInfo,
+                GroupUrlId = model.GroupUrlId,
 
                 IsAdmin = _webContext.IsAdmin || _webContext.IsUltraAdmin,
                 TopUsersTitleText = groupSetting.TopLikersHeaderMessage
@@ -48,18 +49,21 @@
 
         // VK JNET Generator methods
 
-        public static string GenerateCodeFromModel(Top100BestLikersAdminModel model, bool isApi = false)
+        public static string GenerateCodeFromModel(Core.Models.Top100BestLikersModel model, bool isApi = false)
         {
             var sb = new StringBuilder();
             var apiPref = isApi ? string.Empty : "\\";
-
-            sb.AppendLine($"'{apiPref}");
+            if (!isApi)
+            {
+                sb.AppendLine($"'{apiPref}");
+            }
             sb.AppendLine($"var widTitle = \"{model.TopUsersTitleText}\";{apiPref}");
             sb.AppendLine($"var top5Usrs = [{string.Join(',', model.Top100.Take(5))}];{apiPref}");
             sb.AppendLine($"var top5likers = [{GetTopRatesString(model)}];{apiPref}");
             sb.AppendLine($"var loadedUsrs = API.users.get({{ user_ids: top5Usrs, fields: \"sex\" }});{apiPref}");
             sb.AppendLine($"return {{{apiPref}");
             sb.AppendLine($"\"title\": widTitle,{apiPref}");
+            sb.Append($"{AppendToAppUrlAtBottom(model, isApi)}");
             //head
             sb.AppendLine($"\"head\": [{apiPref}");
             sb.AppendLine($"{{\"text\": \"Пользователь\"}},{apiPref}");
@@ -67,25 +71,29 @@
             sb.AppendLine($"],{apiPref}");
 
             sb.AppendLine($"\"body\": [{apiPref}");
-            sb.AppendLine($"{GenerateLikerRowForApi(model, false)}{apiPref}");
+            sb.AppendLine($"{GenerateLikerRowForApi(model, isApi)}{apiPref}");
             sb.AppendLine($"]{apiPref}");
-            sb.AppendLine("};'");
+            sb.AppendLine($"}};{apiPref}");
+            if (!isApi)
+            {
+                sb.AppendLine("'");
+            }
 
             return sb.ToString();
         }
 
-        internal static string AppendToAppUrlAtBottom(Top100BestLikersAdminModel model, bool isApi = false)
+        private static string AppendToAppUrlAtBottom(Core.Models.Top100BestLikersModel model, bool isApi = false)
         {
             var sb = new StringBuilder();
             var apiPref = isApi ? string.Empty : "\\";
 
             sb.AppendLine($"\"more\": \"Посмотреть всю таблицу\",{apiPref}");
-            sb.AppendLine($"\"more_url\": \"https://vk.com/app6758762_-178955520\",{apiPref}");
+            sb.AppendLine($"\"more_url\": \"https://vk.com/app6758762_{model.GroupUrlId}\",{apiPref}");
 
             return sb.ToString();
         }
 
-        internal static string GetTopRatesString(Top100BestLikersAdminModel model)
+        private static string GetTopRatesString(Core.Models.Top100BestLikersModel model)
         {
             var sb = new StringBuilder();
             var first = true;
@@ -104,7 +112,7 @@
             return sb.ToString();
         }
 
-        internal static string GenerateLikerRowForApi(Top100BestLikersAdminModel model, bool isApi = false)
+        private static string GenerateLikerRowForApi(Core.Models.Top100BestLikersModel model, bool isApi = false)
         {
             // Generate VK-API-JSON string for list control
             var sb = new StringBuilder();
@@ -113,7 +121,7 @@
             {
                 if (model.Top100.Length >= i + 1)
                 {
-                    bool hasNext = model.Top100.Length >= i + 4 && i != 4;
+                    bool hasNext = model.Top100.Length >= i + 1 && i != 5;
                     sb.AppendLine($"[{{{apiPref}");
                     sb.AppendLine($"\"text\": loadedUsrs[{i}][\"last_name\"] + \" \" + loadedUsrs[{i}][\"first_name\"],{apiPref}");
                     sb.AppendLine($"\"url\": \"https://vk.com/id\" + loadedUsrs[{i}].id,{apiPref}");
@@ -124,7 +132,7 @@
                     sb.AppendLine($"\"text\": top5likers[{i}]{apiPref}");
                     sb.AppendLine($"}}]{apiPref}");
 
-                    sb.AppendFormat($"{(hasNext ? $",{apiPref}" : "")}");
+                    sb.AppendFormat($"{(hasNext ? "," : string.Empty)}");
                 }
             }
             return sb.ToString();

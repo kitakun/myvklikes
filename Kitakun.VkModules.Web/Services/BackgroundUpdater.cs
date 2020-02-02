@@ -85,6 +85,10 @@ namespace Kitakun.VkModules.Web.Controllers
                         var top3VkCode = Top100BestLikersComponent.GenerateCodeFromModelForApi(model);
                         await vk.AppWidgets.UpdateAsync(top3VkCode, "list");
                         break;
+                    case Core.Domain.BackgroundUpdaterType.Top5:
+                        var top5VkCode = Top5BestLikersTableAdminComponent.GenerateCodeFromModel(model, true);
+                        await vk.AppWidgets.UpdateAsync(top5VkCode, "table");
+                        break;
                 }
             }
         }

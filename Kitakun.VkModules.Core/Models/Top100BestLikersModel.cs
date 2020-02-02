@@ -11,5 +11,7 @@
         public IDictionary<long, (string imgUrl, string uName)> UsersInfo;
 
         public string TopUsersTitleText = "Лучшие";
+
+        public string GroupUrlId;
     }
 }

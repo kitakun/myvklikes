@@ -40,6 +40,7 @@
                 Likes = model.Likes,
                 Top100 = model.Top100,
                 UsersInfo = model.UsersInfo,
+                GroupUrlId = model.GroupUrlId,
 
                 IsAdmin = _webContext.IsAdmin || _webContext.IsUltraAdmin,
                 TopUsersTitleText = groupSetting.TopLikersHeaderMessage

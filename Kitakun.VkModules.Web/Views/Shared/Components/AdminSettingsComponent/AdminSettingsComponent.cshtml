@@ -3,7 +3,7 @@
 
 <div class="page-block">
     @*@using (Html.BeginForm(nameof(Admin.UpdateSettings), nameof(Admin)))*@
-    <form method="post" action="@($"/Admin/UpdateSettings{Context.Request.QueryString.ToString()}")">
+    <form method="post" id="frm" action="@($"/Admin/UpdateSettings{Context.Request.QueryString.ToString()}")">
         @Html.AntiForgeryToken()
 
         <h3>Глобальные настройки виджета</h3>
@@ -36,7 +36,19 @@
                     <div>
                         <div style="display:inline-block">Автообновление ТОП 3:</div>
                         <div id="inputAutoTop3" style="display:inline-block" class="_ui_toggler ui_toggler"></div>
-                        @Html.CheckBoxFor(x => x.EnableAutoupdatingTop3, new { @id= "EnableAutoupdatingTop3", @class="hide" })
+                        @Html.CheckBoxFor(x => x.EnableAutoupdatingTop3, new { @id = "EnableAutoupdatingTop3", @name= "EnableAutoupdatingTop3", @class = "hide" })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>
+                    <div>
+                        <div style="display:inline-block">Автообновление ТОП 5:</div>
+                        <div id="inputAutoTop5" style="display:inline-block" class="_ui_toggler ui_toggler"></div>
+                        @Html.CheckBoxFor(x => x.EnableAutoupdatingTop5, new { @id = "EnableAutoupdatingTop5", @name= "EnableAutoupdatingTop5", @class = "hide" })
                     </div>
                 </td>
             </tr>
@@ -53,15 +65,23 @@
 
         function applyValue(clickableDiv, hiddenInputId) {
             var chb = document.getElementById(clickableDiv);
+            var seccondHidden = document.getElementsByName(hiddenInputId);
             if (allChecks[hiddenInputId]) {
+                chb.checked = true;
                 chb.classList.add('on');
                 chb.classList.add('checked');
-                chb.setAttribute("value", "True");
-
+                chb.setAttribute('value', 'True');
             } else {
+                chb.checked = false;
                 chb.classList.remove('on');
                 chb.classList.remove('checked');
-                chb.setAttribute("value", "false");
+                chb.setAttribute('value', 'false');
+            }
+
+            for (var hchb in seccondHidden) {
+                var control = seccondHidden[hchb];
+                control.checked = allChecks[hiddenInputId];
+                control.value = allChecks[hiddenInputId];
             }
         }
 
@@ -71,14 +91,42 @@
             document
                 .getElementById(clickableDiv)
                 .addEventListener('click', function () {
-                    
+
                     var newValue = !allChecks[hiddenInputId];
                     document.getElementById(hiddenInputId).checked = newValue;
                     allChecks[hiddenInputId] = newValue;
+                    DisableOtherSwitches(clickableDiv);
                     applyValue(clickableDiv, hiddenInputId);
                 });
         }
 
-        MakeSwitchable('inputAutoTop3', 'EnableAutoupdatingTop3');
+        var allSwitches = [
+            { div: 'inputAutoTop3', hidden: 'EnableAutoupdatingTop3' },
+            { div: 'inputAutoTop5', hidden: 'EnableAutoupdatingTop5' }
+        ];
+
+        function DisableOtherSwitches(initDiv) {
+            var toDisable = allSwitches.filter(f => f.div != initDiv);
+            for (var i = 0; i < toDisable.length; i++) {
+                var visibleCheckbox = document.getElementById(toDisable[i].div);
+                var hiddenCheckbox = document.getElementsByName(toDisable[i].hidden);
+                allChecks[toDisable[i].hidden] = false;
+
+                visibleCheckbox.checked = false;
+                visibleCheckbox.classList.remove('on');
+                visibleCheckbox.classList.remove('checked');
+                visibleCheckbox.setAttribute('value', 'false');
+
+                for (var hchb in hiddenCheckbox) {
+                    var control = hiddenCheckbox[hchb];
+                    control.checked = allChecks[toDisable[i].hidden];
+                    control.value = allChecks[toDisable[i].hidden];
+                }
+            }
+        }
+
+        for (var i = 0; i < allSwitches.length; i++) {
+            MakeSwitchable(allSwitches[i].div, allSwitches[i].hidden);
+        }
     });
 </script>
