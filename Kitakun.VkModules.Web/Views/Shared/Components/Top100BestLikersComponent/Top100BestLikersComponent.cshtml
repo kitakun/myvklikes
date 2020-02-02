@@ -2,7 +2,7 @@
 
 @{
     var top3Array = Model.Top100.Take(3).ToArray();
-    var curUserId = Context.Request.Query.TryGetValue("viewer_id", out var rawViewerId) ? long.Parse(rawViewerId.First()) : -1;
+    var curUserId = Context.Request.Query.TryGetValue("vk_user_id", out var rawViewerId) ? long.Parse(rawViewerId.First()) : -1;
 }
 
 <div class="page-block">

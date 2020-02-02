@@ -3,6 +3,7 @@
     using System;
     using System.Linq;
     using System.Text;
+    using System.Security.Cryptography;
 
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Caching.Memory;
@@ -52,15 +53,38 @@
 
             _isVkFrameValid = new Lazy<bool>(() =>
             {
-                var notFine = !_httpContextAccessor.HttpContext.Request.Query.TryGetValue("api_id", out var apiIdQuery);
-                notFine |= !notFine && !_httpContextAccessor.HttpContext.Request.Query.TryGetValue("viewer_id", out var viewerIdQuery);
-                notFine |= !notFine && !_httpContextAccessor.HttpContext.Request.Query.TryGetValue("auth_key", out var authKeyQuery);
-
-                if (notFine == false)
+                var sb = new StringBuilder();
+                var isFirst = true;
+                foreach (var queryKey in _httpContextAccessor.HttpContext.Request.Query.Keys.OrderBy(x => x))
                 {
-                    var md5 = CreateMD5($"{apiIdQuery}_{viewerIdQuery}_{_config.GetValue<string>("VkAppSecret")}");
+                    if (queryKey.StartsWith("vk_"))
+                    {
+                        var curQuery = _httpContextAccessor.HttpContext.Request.Query[queryKey];
+                        if (isFirst)
+                        {
+                            sb.Append($"{queryKey}={curQuery}");
+                            isFirst = false;
+                        }
+                        else
+                        {
+                            sb.Append($"&{queryKey}={curQuery}");
+                        }
+                    }
+                }
 
-                    return authKeyQuery.ToString().Equals(md5, StringComparison.OrdinalIgnoreCase);
+                var appSecret = _config.GetValue<string>("VkAppSecret");
+
+                if (_httpContextAccessor.HttpContext.Request.Query.TryGetValue("sign", out var signFromQuery))
+                {
+                    var hmacHash = GetHmacHash(sb.ToString(), appSecret);
+
+                    var decodedHmacSign = hmacHash
+                        .Trim()
+                        .Replace("/", "_")
+                        .Replace("+", "-")
+                        .TrimEnd('=');
+
+                    return decodedHmacSign == signFromQuery.ToString();
                 }
 
                 return false;
@@ -68,7 +92,7 @@
 
             _actualUserId = new Lazy<long>(() => _memoryCache.GetOrCreate($"VkAccessToken={IsVkFrameValid}", (e) =>
             {
-                if (IsVkFrameValid && _httpContextAccessor.HttpContext.Request.Query.TryGetValue("viewer_id", out var viewerIdQuery))
+                if (IsVkFrameValid && _httpContextAccessor.HttpContext.Request.Query.TryGetValue("vk_user_id", out var viewerIdQuery))
                 {
                     return long.Parse(viewerIdQuery);
                 }
@@ -81,7 +105,7 @@
 
                 return _memoryCache.GetOrCreate($"IsViewerAdmin={viewerId}", (e) =>
                 {
-                    if (_httpContextAccessor.HttpContext.Request.Query.TryGetValue("group_id", out var groupIds))
+                    if (_httpContextAccessor.HttpContext.Request.Query.TryGetValue("vk_group_id", out var groupIds))
                     {
                         var groupId = long.Parse(groupIds[0]);
 
@@ -117,7 +141,7 @@
 
             _groupId = new Lazy<long>(() =>
             {
-                if (_httpContextAccessor.HttpContext.Request.Query.TryGetValue("group_id", out var strVal))
+                if (_httpContextAccessor.HttpContext.Request.Query.TryGetValue("vk_group_id", out var strVal))
                 {
                     return long.Parse(strVal);
                 }
@@ -137,19 +161,12 @@
             return false;
         }
 
-        private static string CreateMD5(string input)
+        private static string GetHmacHash(string text, string key)
         {
-            using (var md5 = System.Security.Cryptography.MD5.Create())
+            using (var hmacsha256 = new HMACSHA256(Encoding.UTF8.GetBytes(key)))
             {
-                byte[] inputBytes = Encoding.ASCII.GetBytes(input);
-                byte[] hashBytes = md5.ComputeHash(inputBytes);
-
-                var sb = new StringBuilder();
-                for (int i = 0; i < hashBytes.Length; i++)
-                {
-                    sb.Append(hashBytes[i].ToString("X2"));
-                }
-                return sb.ToString();
+                var hash = hmacsha256.ComputeHash(Encoding.UTF8.GetBytes(text));
+                return Convert.ToBase64String(hash);
             }
         }
     }
