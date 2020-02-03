@@ -1,5 +1,6 @@
 ﻿@model Kitakun.VkModules.Web.WebModels.Top100BestLikersAdminModel
 @using Top100BestLikersComponent = Kitakun.VkModules.Web.Components.Top100BestLikersComponent;
+@inject Kitakun.VkModules.Services.Abstractions.IWebContext webContext
 
 <div class="page-block">
     <h3>Трое лучших</h3>
@@ -41,7 +42,9 @@
             function () {
                 var code = @Html.Raw(Top100BestLikersComponent.GenerateCodeFromModel(Model))
 
-                VK.callMethod('showAppWidgetPreviewBox', 'list', code);
+                vkConnect.default.send("VKWebAppShowCommunityWidgetPreviewBox", {
+                    "group_id": @webContext.GroupId, "type": "list", "code": code
+                });
             });
     })
 </script>

@@ -36,4 +36,8 @@
     <ProjectReference Include="..\Kitakun.VkModules.Services.Utils\Kitakun.VkModules.Services.Utils.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\js\" />
+  </ItemGroup>
+
 </Project>

@@ -1,5 +1,6 @@
 ﻿@model Kitakun.VkModules.Web.WebModels.Top100BestLikersAdminModel
 @using Top5BestLikersTableAdminComponent = Kitakun.VkModules.Web.Components.Top5BestLikersTableAdminComponent;
+@inject Kitakun.VkModules.Services.Abstractions.IWebContext webContext
 
 <div class="page-block">
     <h3>Пятеро лучших</h3>
@@ -29,12 +30,14 @@
             }
             window.location.href = url;
         });
-        
+
         document.getElementById('updateTop5Likers').addEventListener('click',
             function () {
                 var code = @Html.Raw(Top5BestLikersTableAdminComponent.GenerateCodeFromModel(Model));
 
-                VK.callMethod('showAppWidgetPreviewBox', 'table', code);
+                vkConnect.default.send("VKWebAppShowCommunityWidgetPreviewBox", {
+                    "group_id": @webContext.GroupId, "type": "table", "code": code
+                });
             });
     })
 </script>
@@ -44,10 +47,10 @@
         border-collapse: collapse;
     }
 
-    .likers-table th {
-        border-bottom: 1px solid #d3d9de;
-        padding-bottom: 20px;
-    }
+        .likers-table th {
+            border-bottom: 1px solid #d3d9de;
+            padding-bottom: 20px;
+        }
 
     .small-header {
         width: 50px;

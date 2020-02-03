@@ -1,4 +1,5 @@
-﻿<div class="page-block">
+﻿@inject Kitakun.VkModules.Services.Abstractions.IWebContext webContext
+<div class="page-block">
     <h3>Табличка с текстом</h3>
     <table class="fullwidth">
         <tr>
@@ -16,7 +17,7 @@
 
     <div class="example">
         <div>Будет выглядеть так:</div>
-        <img src="~/wwwroot/img/widgetText.png"/>
+        <img src="~/wwwroot/img/widgetText.png" />
     </div>
 </div>
 
@@ -25,10 +26,12 @@
         document
             .getElementById('btnMakeText')
             .addEventListener('click', function () {
-                VK.callMethod('showAppWidgetPreviewBox',
-                'text',
-                'return { "title": "' + document.getElementById('jTextTitle').value
-                + '", "text": "' + document.getElementById('jTextBody').value + '" };');
+                var code = 'return { "title": "' + document.getElementById('jTextTitle').value
+                    + '", "text": "' + document.getElementById('jTextBody').value + '" };';
+
+                vkConnect.default.send("VKWebAppShowCommunityWidgetPreviewBox", {
+                    "group_id": @webContext.GroupId, "type": "text", "code": code
+                });
             });
 })
 </script>

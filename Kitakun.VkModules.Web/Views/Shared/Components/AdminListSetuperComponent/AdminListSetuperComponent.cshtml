@@ -1,4 +1,5 @@
-﻿<div class="page-block">
+﻿@inject Kitakun.VkModules.Services.Abstractions.IWebContext webContext
+<div class="page-block">
     <h3>Вывести одного пользователя</h3>
     <table class="fullwidth">
         <tr>
@@ -50,7 +51,9 @@
 
                 code = code.replace(/{first_name}/g, '" + user.first_name + "');
                 code = code.replace(/{last_name}/g, '" + user.last_name + "');
-                VK.callMethod('showAppWidgetPreviewBox', 'list', code);
+                vkConnect.default.send("VKWebAppShowCommunityWidgetPreviewBox", {
+                    "group_id": @webContext.GroupId, "type": "list", "code": code
+                });
             });
     })
 </script>
