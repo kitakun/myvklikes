@@ -3,6 +3,7 @@ namespace Kitakun.VkModules.Services.GroupLikeService
     using System;
     using System.Linq;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Threading.Tasks;
 
     using VkNet;
@@ -14,12 +15,15 @@ namespace Kitakun.VkModules.Services.GroupLikeService
 
     using Kitakun.VkModules.Services.Abstractions;
     using Kitakun.VkModules.Services.GroupLikeService.Models;
-    using System.Collections.ObjectModel;
 
     // https://vk.com/dev/objects/appWidget
     internal class GroupLikesService : IGroupLikesService
     {
         private const ulong loadPerPart = 100;
+
+        private const int LikePrice = 1;
+        private const int CommentPrice = 4;
+        private const int RepostPrice = 8;
 
         private VkApi _sharedVkApi;
         private string _sharedForToken;
@@ -76,6 +80,7 @@ namespace Kitakun.VkModules.Services.GroupLikeService
                         allPosts.Add(new LoadWallPostsStoreProcedureRecord
                         {
                             Id = curPost.Id.Value,
+                            PostOwnerId = curPost.OwnerId,
                             Likes = curPost.Likes.Count,
                             Comments = curPost.Comments.Count,
                             Reposts = curPost.Reposts.Count
@@ -117,22 +122,66 @@ namespace Kitakun.VkModules.Services.GroupLikeService
 
             if (allPosts.Count > 0)
             {
-                var postsIdsWithLikes = CreatePostsIdsWithLikes(allPosts);
+                // Likes
+                var postsIdsWithLikes = CreatePostsIds(allPosts, true, false);
 
                 if (postsIdsWithLikes.Length > 0)
                 {
-                    var loadPostsTask = postsIdsWithLikes
-                        .Select(postId => api.Likes.GetListAsync(new LikesGetListParams
+                    var loadPostsTask = new Task<VkNet.Utils.VkCollection<long>>[postsIdsWithLikes.Length];
+                    for (var i = 0; i < postsIdsWithLikes.Length; i++)
+                    {
+                        loadPostsTask[i] = api.Likes.GetListAsync(new LikesGetListParams
                         {
                             OwnerId = userId,
                             Type = LikeObjectType.Post,
-                            ItemId = postId,
+                            ItemId = postsIdsWithLikes[i],
                             Extended = true
-                        })).ToArray();
+                        });
+                    }
 
                     await Task.WhenAll(loadPostsTask);
 
                     FillDictionaryWithLikes(ref linkedUserWithLikesCount, loadPostsTask);
+                }
+
+                // Comments
+                var postsIdsWithComments = CreatePostsIds(allPosts, false, true);
+
+                if (postsIdsWithComments.Length > 0)
+                {
+                    var loadPostCommentsTask = new Task<WallGetCommentsResult>[postsIdsWithComments.Length];
+                    for (var i = 0; i < postsIdsWithComments.Length; i++)
+                    {
+                        loadPostCommentsTask[i] = api.Wall.GetCommentsAsync(new WallGetCommentsParams
+                        {
+                            OwnerId = userId,
+                            PreviewLength = 60,
+                            Extended = false,
+                            PostId = postsIdsWithComments[i]
+                        });
+                    }
+
+                    await Task.WhenAll(loadPostCommentsTask);
+
+                    FillDictionaryWithComments(ref linkedUserWithLikesCount, loadPostCommentsTask);
+                }
+
+                // Reposts
+                var postWithReposts = CreatePostsIdsForReposts(allPosts);
+
+                // Not tested
+                if (postWithReposts.Length > 0)
+                {
+                    var loadReposts = new Task<WallGetObject>[postWithReposts.Length];
+
+                    for (var i = 0; i < postWithReposts.Length; i++)
+                    {
+                        loadReposts[i] = api.Wall.GetRepostsAsync(postWithReposts[i].ownerId, postWithReposts[i].postId, null, null, false);
+                    }
+
+                    await Task.WhenAll(loadReposts);
+
+                    FillDictionaryWithReposts(ref linkedUserWithLikesCount, loadReposts);
                 }
             }
 
@@ -158,12 +207,16 @@ namespace Kitakun.VkModules.Services.GroupLikeService
             return methodResponse;
         }
 
-        private static long[] CreatePostsIdsWithLikes(List<LoadWallPostsStoreProcedureRecord> allPosts)
+        private static long[] CreatePostsIds(List<LoadWallPostsStoreProcedureRecord> allPosts, bool withLikes, bool withComments)
         {
             var preCount = 0;
             for (var i = 0; i < allPosts.Count; i++)
             {
-                if (allPosts[i].Likes > 0)
+                if (withLikes && allPosts[i].Likes > 0)
+                {
+                    preCount++;
+                }
+                else if (withComments && allPosts[i].Comments > 0)
                 {
                     preCount++;
                 }
@@ -172,14 +225,44 @@ namespace Kitakun.VkModules.Services.GroupLikeService
             var index = 0;
             for (var i = 0; i < allPosts.Count; i++)
             {
-                if (allPosts[i].Likes > 0)
+                if (withLikes && allPosts[i].Likes > 0)
                 {
                     resultArray[index] = allPosts[i].Id;
+                    index++;
                 }
-                index++;
+                else if (withComments && allPosts[i].Comments > 0)
+                {
+                    resultArray[index] = allPosts[i].Id;
+                    index++;
+                }
             }
             return resultArray;
         }
+
+        private static (long postId, long ownerId)[] CreatePostsIdsForReposts(List<LoadWallPostsStoreProcedureRecord> allPosts)
+        {
+            var preCount = 0;
+            for (var i = 0; i < allPosts.Count; i++)
+            {
+                if (allPosts[i].PostOwnerId.HasValue && allPosts[i].Reposts > 0)
+                {
+                    preCount++;
+                }
+            }
+            var resultArray = new (long postId, long ownerId)[preCount];
+            var index = 0;
+            for (var i = 0; i < allPosts.Count; i++)
+            {
+                if (allPosts[i].Reposts > 0)
+                {
+                    resultArray[index] = (allPosts[i].Id, allPosts[i].PostOwnerId.Value);
+                    index++;
+                }
+            }
+            return resultArray;
+        }
+
+        // Fill dictionary<userId, score> with score's 
 
         private static void FillDictionaryWithLikes(ref Dictionary<long, int> linkedUserWithLikesCount, Task<VkNet.Utils.VkCollection<long>>[] loadPostsTask)
         {
@@ -190,11 +273,54 @@ namespace Kitakun.VkModules.Services.GroupLikeService
                 {
                     if (linkedUserWithLikesCount.ContainsKey(taskResult[j]))
                     {
-                        linkedUserWithLikesCount[taskResult[j]] = linkedUserWithLikesCount[taskResult[j]] + 1; 
+                        linkedUserWithLikesCount[taskResult[j]] = linkedUserWithLikesCount[taskResult[j]] + LikePrice;
                     }
                     else
                     {
-                        linkedUserWithLikesCount.Add(taskResult[j], 1);
+                        linkedUserWithLikesCount.Add(taskResult[j], LikePrice);
+                    }
+                }
+            }
+        }
+
+        private static void FillDictionaryWithComments(ref Dictionary<long, int> linkedUserWithLikesCount, Task<WallGetCommentsResult>[] loadedCommentsTasks)
+        {
+            for (var i = 0; i < loadedCommentsTasks.Length; i++)
+            {
+                var commentObject = loadedCommentsTasks[i].Result.Items;
+                for (var j = 0; j < commentObject.Count; j++)
+                {
+                    if (!commentObject[j].FromId.HasValue)
+                        continue;
+
+                    var writerId = commentObject[j].FromId.Value;
+                    if (linkedUserWithLikesCount.ContainsKey(writerId))
+                    {
+                        linkedUserWithLikesCount[writerId] = linkedUserWithLikesCount[writerId] + CommentPrice;
+                    }
+                    else
+                    {
+                        linkedUserWithLikesCount.Add(writerId, CommentPrice);
+                    }
+                }
+            }
+        }
+
+        private static void FillDictionaryWithReposts(ref Dictionary<long, int> linkedUserWithLikesCount, Task<WallGetObject>[] repostsObject)
+        {
+            for (var i = 0; i < repostsObject.Length; i++)
+            {
+                var repostObject = repostsObject[i].Result.Profiles;
+                for (var j = 0; j < repostObject.Count; j++)
+                {
+                    var reposterId = repostObject[j].Id;
+                    if (linkedUserWithLikesCount.ContainsKey(reposterId))
+                    {
+                        linkedUserWithLikesCount[reposterId] = linkedUserWithLikesCount[reposterId] + RepostPrice;
+                    }
+                    else
+                    {
+                        linkedUserWithLikesCount.Add(reposterId, RepostPrice);
                     }
                 }
             }
