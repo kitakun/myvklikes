@@ -36,7 +36,7 @@
                     <div>
                         <div style="display:inline-block">Автообновление ТОП 3:</div>
                         <div id="inputAutoTop3" style="display:inline-block" class="_ui_toggler ui_toggler"></div>
-                        @Html.CheckBoxFor(x => x.EnableAutoupdatingTop3, new { @id = "EnableAutoupdatingTop3", @name= "EnableAutoupdatingTop3", @class = "hide" })
+                        @Html.CheckBoxFor(x => x.EnableAutoupdatingTop3, new { @id = "EnableAutoupdatingTop3", @name = "EnableAutoupdatingTop3", @class = "hide" })
                     </div>
                 </td>
             </tr>
@@ -48,14 +48,45 @@
                     <div>
                         <div style="display:inline-block">Автообновление ТОП 5:</div>
                         <div id="inputAutoTop5" style="display:inline-block" class="_ui_toggler ui_toggler"></div>
-                        @Html.CheckBoxFor(x => x.EnableAutoupdatingTop5, new { @id = "EnableAutoupdatingTop5", @name= "EnableAutoupdatingTop5", @class = "hide" })
+                        @Html.CheckBoxFor(x => x.EnableAutoupdatingTop5, new { @id = "EnableAutoupdatingTop5", @name = "EnableAutoupdatingTop5", @class = "hide" })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>
+                    <div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Баллы за лайк</th>
+                                    <th>Баллы за коммент</th>
+                                    <th>Баллы за репост</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        @Html.EditorFor(x => x.PriceFromLike)
+                                    </td>
+                                    <td>
+                                        @Html.EditorFor(x => x.PriceFromComment)
+                                    </td>
+                                    <td>
+                                        @Html.EditorFor(x => x.PriceFromRepost)
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </td>
             </tr>
 
         </table>
 
-        <button id='btnSaveChanges' type="submit" class="flat-button">Сохранить изменения</button>
+        <button id='btnSaveChanges' type="submit" onclick="loadingBeforeReloading()" class="flat-button">Сохранить изменения</button>
     </form>
 </div>
 

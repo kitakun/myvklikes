@@ -1,0 +1,37 @@
+﻿@model Kitakun.VkModules.Core.Domain.GroupSettings[]
+@{
+    ViewData["Title"] = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>UltraAdmin</h1>
+<h3>All groupSettings list (top 25)</h3>
+
+@if (!string.IsNullOrEmpty(ViewBag.Message))
+{
+    <div class="page-block">
+        <div class="info-wrap">
+            <div class="info">
+                @Html.Raw(ViewBag.Message.ToString())
+            </div>
+        </div>
+    </div>
+}
+
+<table class="fullwidth">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>GroupId</th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (var i = 0; i < Model.Length; i++)
+        {
+            <tr>
+                <td class="center">@Model[i].Id</td>
+                <td class="center">@Model[i].GroupId</td>
+            </tr>
+        }
+    </tbody>
+</table>

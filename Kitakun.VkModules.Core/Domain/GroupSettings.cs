@@ -25,5 +25,14 @@
         public string LastRunnedJobId { get; set; }
 
         public BackgroundUpdaterType BackgroundJobType { get; set; }
+
+        [Display(Name = "LikePrice - число баллов за лайк поста")]
+        public int LikePrice { get; set; }
+
+        [Display(Name = "CommentPrice - число баллов за коммент к посту")]
+        public int CommentPrice { get; set; }
+
+        [Display(Name = "RepostPrice - число баллов за репост поста")]
+        public int RepostPrice { get; set; }
     }
 }

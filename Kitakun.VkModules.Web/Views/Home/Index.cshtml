@@ -183,17 +183,21 @@ else
         elmnt.style.backgroundColor = '#4872a3';
     }
 
+    function loadingBeforeReloading() {
+        var overlay = document.createElement('div');
+        overlay.className = 'overlay';
+        var body = document.querySelector('body');
+        body.appendChild(overlay);
+
+        var modal = document.getElementById('loadingmodal');
+        modal.classList.add('is-active');
+    }
+
     document.getElementById("defaultOpen").click();
     window.allcustombinds.push(function () {
         document.getElementById('forceReload').addEventListener('click', function () {
 
-            var overlay = document.createElement('div');
-            overlay.className = 'overlay';
-            var body = document.querySelector('body');
-            body.appendChild(overlay);
-
-            var modal = document.getElementById('loadingmodal');
-            modal.classList.add('is-active');
+            loadingBeforeReloading();
 
             var url = window.location.href;
             if (url.indexOf('?') > -1) {

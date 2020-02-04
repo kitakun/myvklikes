@@ -37,7 +37,10 @@
                 AppToken = groupSetting.GroupAppToken,
                 TopLikersHeaderMessage = groupSetting.TopLikersHeaderMessage,
                 EnableAutoupdatingTop3 = groupSetting.BackgroundJobType == Core.Domain.BackgroundUpdaterType.Top3,
-                EnableAutoupdatingTop5 = groupSetting.BackgroundJobType == Core.Domain.BackgroundUpdaterType.Top5
+                EnableAutoupdatingTop5 = groupSetting.BackgroundJobType == Core.Domain.BackgroundUpdaterType.Top5,
+                PriceFromLike = groupSetting.LikePrice,
+                PriceFromComment = groupSetting.CommentPrice,
+                PriceFromRepost = groupSetting.RepostPrice,
             });
         }
     }

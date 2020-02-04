@@ -11,6 +11,7 @@
     using Kitakun.VkModules.Web.Infrastructure;
     using Kitakun.VkModules.Persistance;
     using Kitakun.VkModules.Core.Domain;
+    using System.Linq;
 
     [AllowAnonymous]
     [Area(AreaNames.UltraAdminAreaName)]
@@ -37,6 +38,14 @@
             return View("Index", expectedEntity);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> List()
+        {
+            var expectedEntity = await _dbContext.GroupSettings.Take(25).ToArrayAsync();
+
+            return View("List", expectedEntity);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create([FromForm] GroupSettings model)
         {
@@ -60,10 +69,31 @@
             existingEntity.GroupAppToken = model.GroupAppToken;
             existingEntity.TopLikersHeaderMessage = model.TopLikersHeaderMessage;
 
+            existingEntity.LikePrice = model.LikePrice;
+            existingEntity.CommentPrice = model.CommentPrice;
+            existingEntity.RepostPrice = model.RepostPrice;
+
             await _dbContext.SaveChangesAsync();
 
             ViewBag.Message = "Успешно обнавлено";
 
+            return View("Index", existingEntity);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete([FromForm] GroupSettings model)
+        {
+            var existingEntity = await _dbContext.GroupSettings.FindAsync(model.Id);
+            if (existingEntity == null)
+                return NotFound();
+
+            _dbContext.GroupSettings.Remove(existingEntity);
+
+            await _dbContext.SaveChangesAsync();
+
+            ViewBag.Message = "Успешно удалено";
+
+            existingEntity.Id = -1;
             return View("Index", existingEntity);
         }
     }

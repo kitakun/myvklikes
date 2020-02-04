@@ -18,7 +18,7 @@ namespace Kitakun.VkModules.Services.Abstractions
         /// <param name="from">From datetime</param>
         /// <param name="to">To datetime</param>
         /// <returns>Dictionary[userId, likesCount]</returns>
-        Task<IDictionary<long, int>> LoadAllLikesForCommunityPostsAsync(string token, long userId, DateTime from, DateTime to);
+        Task<IDictionary<long, int>> LoadAllLikesForCommunityPostsAsync(string token, long userId, DateTime from, DateTime to, Core.Domain.GroupSettings groupSetting);
 
         /// <summary>
         /// Load users small preview with names by userIds

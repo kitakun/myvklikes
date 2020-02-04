@@ -6,7 +6,7 @@
 
 <h1>UltraAdmin</h1>
 
-@if(!string.IsNullOrEmpty(ViewBag.Message))
+@if (!string.IsNullOrEmpty(ViewBag.Message))
 {
     <div class="page-block">
         <div class="info-wrap">
@@ -17,6 +17,8 @@
     </div>
 }
 
+@if (Model.Id >= 0)
+{
     <div class="page-block">
         @if (Model.Id > 0)
         {
@@ -50,6 +52,15 @@
             @Html.LabelFor(x => x.TopLikersHeaderMessage)
             @Html.EditorFor(x => x.TopLikersHeaderMessage, new { htmlAttributes = new { @class = "singleline-input" } })
 
+            @Html.LabelFor(x => x.LikePrice)
+            @Html.EditorFor(x => x.LikePrice, new { htmlAttributes = new { @class = "singleline-input" } })
+
+            @Html.LabelFor(x => x.CommentPrice)
+            @Html.EditorFor(x => x.CommentPrice, new { htmlAttributes = new { @class = "singleline-input" } })
+
+            @Html.LabelFor(x => x.RepostPrice)
+            @Html.EditorFor(x => x.RepostPrice, new { htmlAttributes = new { @class = "singleline-input" } })
+
             @if (Model.Id > 0)
             {
                 <button class="flat-button" type="submit">Обновить</button>
@@ -59,4 +70,14 @@
                 <button class="flat-button" type="submit">Создать новую</button>
             }
         }
+
+        @if (Model.Id > 0)
+        {
+            @using (Html.BeginForm("Delete", "GroupSettings"))
+            {
+                @Html.HiddenFor(x => x.Id)
+                <button class="flat-button" type="submit">Удалить</button>
+            }
+        }
     </div>
+}

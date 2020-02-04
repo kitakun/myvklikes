@@ -58,7 +58,6 @@
                 }
             }
 
-
             var calculationData = default(IDictionary<long, int>);
             var idIsPositive = groupId > 0;
 
@@ -72,7 +71,7 @@
                 // Load from api & save if we don't have it
                 if (forceRecalc || calculationData == null)
                 {
-                    calculationData = await _likeService.LoadAllLikesForCommunityPostsAsync(appToken, groupId, firstDayOfMonth, lastDayOfMonth);
+                    calculationData = await _likeService.LoadAllLikesForCommunityPostsAsync(appToken, groupId, firstDayOfMonth, lastDayOfMonth, groupSetting);
                     await _dataCollectionsService.SaveGroupLikesDataAsync(groupId, firstDayOfMonth, lastDayOfMonth, calculationData, forceRecalc);
                 }
             }

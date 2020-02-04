@@ -54,6 +54,10 @@
                 groupSetting.GroupAppToken = model.AppToken;
                 groupSetting.TopLikersHeaderMessage = model.TopLikersHeaderMessage;
 
+                groupSetting.LikePrice = model.PriceFromLike;
+                groupSetting.CommentPrice = model.PriceFromComment;
+                groupSetting.RepostPrice = model.PriceFromRepost;
+
                 var skipEnablingBackgroundJob = false;
                 if (!string.IsNullOrEmpty(groupSetting.RecuringBackgroundJobId))
                 {

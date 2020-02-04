@@ -21,10 +21,6 @@ namespace Kitakun.VkModules.Services.GroupLikeService
     {
         private const ulong loadPerPart = 100;
 
-        private const int LikePrice = 1;
-        private const int CommentPrice = 1;
-        private const int RepostPrice = 3;
-
         private VkApi _sharedVkApi;
         private string _sharedForToken;
 
@@ -52,7 +48,8 @@ namespace Kitakun.VkModules.Services.GroupLikeService
             string token,
             long userId,
             DateTime from,
-            DateTime to)
+            DateTime to,
+            Core.Domain.GroupSettings groupSetting)
         {
             var api = await GetApi(token);
 
@@ -141,7 +138,7 @@ namespace Kitakun.VkModules.Services.GroupLikeService
 
                     await Task.WhenAll(loadPostsTask);
 
-                    FillDictionaryWithLikes(ref linkedUserWithLikesCount, loadPostsTask);
+                    FillDictionaryWithLikes(ref linkedUserWithLikesCount, loadPostsTask, groupSetting.LikePrice);
                 }
 
                 // Comments
@@ -163,7 +160,7 @@ namespace Kitakun.VkModules.Services.GroupLikeService
 
                     await Task.WhenAll(loadPostCommentsTask);
 
-                    FillDictionaryWithComments(ref linkedUserWithLikesCount, loadPostCommentsTask);
+                    FillDictionaryWithComments(ref linkedUserWithLikesCount, loadPostCommentsTask, groupSetting.CommentPrice);
                 }
 
                 // Reposts
@@ -181,7 +178,7 @@ namespace Kitakun.VkModules.Services.GroupLikeService
 
                     await Task.WhenAll(loadReposts);
 
-                    FillDictionaryWithReposts(ref linkedUserWithLikesCount, loadReposts);
+                    FillDictionaryWithReposts(ref linkedUserWithLikesCount, loadReposts, groupSetting.RepostPrice);
                 }
             }
 
@@ -264,7 +261,7 @@ namespace Kitakun.VkModules.Services.GroupLikeService
 
         // Fill dictionary<userId, score> with score's 
 
-        private static void FillDictionaryWithLikes(ref Dictionary<long, int> linkedUserWithLikesCount, Task<VkNet.Utils.VkCollection<long>>[] loadPostsTask)
+        private static void FillDictionaryWithLikes(ref Dictionary<long, int> linkedUserWithLikesCount, Task<VkNet.Utils.VkCollection<long>>[] loadPostsTask, int likePrice)
         {
             for (var i = 0; i < loadPostsTask.Length; i++)
             {
@@ -273,17 +270,17 @@ namespace Kitakun.VkModules.Services.GroupLikeService
                 {
                     if (linkedUserWithLikesCount.ContainsKey(taskResult[j]))
                     {
-                        linkedUserWithLikesCount[taskResult[j]] = linkedUserWithLikesCount[taskResult[j]] + LikePrice;
+                        linkedUserWithLikesCount[taskResult[j]] = linkedUserWithLikesCount[taskResult[j]] + likePrice;
                     }
                     else
                     {
-                        linkedUserWithLikesCount.Add(taskResult[j], LikePrice);
+                        linkedUserWithLikesCount.Add(taskResult[j], likePrice);
                     }
                 }
             }
         }
 
-        private static void FillDictionaryWithComments(ref Dictionary<long, int> linkedUserWithLikesCount, Task<WallGetCommentsResult>[] loadedCommentsTasks)
+        private static void FillDictionaryWithComments(ref Dictionary<long, int> linkedUserWithLikesCount, Task<WallGetCommentsResult>[] loadedCommentsTasks, int commentPrice)
         {
             for (var i = 0; i < loadedCommentsTasks.Length; i++)
             {
@@ -296,17 +293,17 @@ namespace Kitakun.VkModules.Services.GroupLikeService
                     var writerId = commentObject[j].FromId.Value;
                     if (linkedUserWithLikesCount.ContainsKey(writerId))
                     {
-                        linkedUserWithLikesCount[writerId] = linkedUserWithLikesCount[writerId] + CommentPrice;
+                        linkedUserWithLikesCount[writerId] = linkedUserWithLikesCount[writerId] + commentPrice;
                     }
                     else
                     {
-                        linkedUserWithLikesCount.Add(writerId, CommentPrice);
+                        linkedUserWithLikesCount.Add(writerId, commentPrice);
                     }
                 }
             }
         }
 
-        private static void FillDictionaryWithReposts(ref Dictionary<long, int> linkedUserWithLikesCount, Task<WallGetObject>[] repostsObject)
+        private static void FillDictionaryWithReposts(ref Dictionary<long, int> linkedUserWithLikesCount, Task<WallGetObject>[] repostsObject, int repostPrice)
         {
             for (var i = 0; i < repostsObject.Length; i++)
             {
@@ -316,11 +313,11 @@ namespace Kitakun.VkModules.Services.GroupLikeService
                     var reposterId = repostObject[j].Id;
                     if (linkedUserWithLikesCount.ContainsKey(reposterId))
                     {
-                        linkedUserWithLikesCount[reposterId] = linkedUserWithLikesCount[reposterId] + RepostPrice;
+                        linkedUserWithLikesCount[reposterId] = linkedUserWithLikesCount[reposterId] + repostPrice;
                     }
                     else
                     {
-                        linkedUserWithLikesCount.Add(reposterId, RepostPrice);
+                        linkedUserWithLikesCount.Add(reposterId, repostPrice);
                     }
                 }
             }
