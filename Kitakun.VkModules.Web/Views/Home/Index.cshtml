@@ -29,6 +29,11 @@
             <p>Иначе спустя некоторое время виджет сам поменяется.</p>
         </div>
 
+        <div class="example">
+            <div>Перерасчет происходит 1 раз в день при первом открытии этого фрейма ИЛИ по нажатию кнопку "пересчет"</div>
+            <button id="forceReload">Пересчет</button>
+        </div>
+
         <div class="admin-panel">
 
             @(await Component.InvokeAsync<Kitakun.VkModules.Web.Components.Top100BestLikersAdminComponent>())
@@ -81,6 +86,11 @@ else
     }
 }
 
+<div id="loadingmodal" class="loading-modal">
+    <img style="width:32px; height: 32px" src="~/wwwroot/img/light-loader.gif" />
+</div>
+
+
 @section Style {
     <style>
         .admin-panel {
@@ -119,14 +129,39 @@ else
             font-size: 17px;
         }
 
-        .tablink:hover {
-            background-color: #5b88bd;
-            text-decoration: none;
-        }
+            .tablink:hover {
+                background-color: #5b88bd;
+                text-decoration: none;
+            }
 
         .tabcontent {
             display: none;
             height: 100%;
+        }
+
+        .loading-modal {
+            display: none;
+            position: fixed;
+            top: calc(50% - 32px);
+            left: calc(50% - 32px);
+            bottom: 0;
+            z-index: 9000;
+        }
+
+            .loading-modal.is-active {
+                display: block;
+            }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            z-index: 8000;
+            background-color: rgba(0, 0, 0, 0.5);
         }
     </style>
 }
@@ -149,4 +184,24 @@ else
     }
 
     document.getElementById("defaultOpen").click();
+    window.allcustombinds.push(function () {
+        document.getElementById('forceReload').addEventListener('click', function () {
+
+            var overlay = document.createElement('div');
+            overlay.className = 'overlay';
+            var body = document.querySelector('body');
+            body.appendChild(overlay);
+
+            var modal = document.getElementById('loadingmodal');
+            modal.classList.add('is-active');
+
+            var url = window.location.href;
+            if (url.indexOf('?') > -1) {
+                url += '&recalc'
+            } else {
+                url += '?recalc'
+            }
+            window.location.href = url;
+        });
+    });
 </script>

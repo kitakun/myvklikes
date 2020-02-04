@@ -5,10 +5,6 @@
 <div class="page-block">
     <h3>Пятеро лучших</h3>
     <div class="admin-panel">
-        <div class="example">
-            <div>Перерасчет происходит 1 раз в день при первом открытии этого фрейма ИЛИ по нажатию кнопку "пересчет"</div>
-            <button id="forceReload">Пересчет</button>
-        </div>
         <p><b>Заголовок:</b> @Model.TopUsersTitleText</p>
         <button id='updateTop5Likers' class="flat-button">Обновить виджет в сообществе прямо сейчас</button>
     </div>
@@ -21,16 +17,6 @@
 
 <script>
     window.allcustombinds.push(function () {
-        document.getElementById('forceReload').addEventListener('click', function () {
-            var url = window.location.href;
-            if (url.indexOf('?') > -1) {
-                url += '&recalc'
-            } else {
-                url += '?recalc'
-            }
-            window.location.href = url;
-        });
-
         document.getElementById('updateTop5Likers').addEventListener('click',
             function () {
                 var code = @Html.Raw(Top5BestLikersTableAdminComponent.GenerateCodeFromModel(Model));

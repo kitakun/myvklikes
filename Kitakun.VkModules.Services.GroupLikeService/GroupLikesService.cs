@@ -22,8 +22,8 @@ namespace Kitakun.VkModules.Services.GroupLikeService
         private const ulong loadPerPart = 100;
 
         private const int LikePrice = 1;
-        private const int CommentPrice = 4;
-        private const int RepostPrice = 8;
+        private const int CommentPrice = 1;
+        private const int RepostPrice = 3;
 
         private VkApi _sharedVkApi;
         private string _sharedForToken;
@@ -155,7 +155,7 @@ namespace Kitakun.VkModules.Services.GroupLikeService
                         loadPostCommentsTask[i] = api.Wall.GetCommentsAsync(new WallGetCommentsParams
                         {
                             OwnerId = userId,
-                            PreviewLength = 60,
+                            PreviewLength = 1,
                             Extended = false,
                             PostId = postsIdsWithComments[i]
                         });

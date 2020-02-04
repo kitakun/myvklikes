@@ -5,10 +5,6 @@
 <div class="page-block">
     <h3>Трое лучших</h3>
     <div class="admin-panel">
-        <div class="example">
-            <div>Перерасчет происходит 1 раз в день при первом открытии этого фрейма ИЛИ по нажатию кнопку "пересчет"</div>
-            <button id="forceReload">Пересчет</button>
-        </div>
         <p><b>Заголовок:</b> @Model.TopUsersTitleText</p>
         <button id='updateTopLikers' class="flat-button">Обновить виджет в сообществе прямо сейчас</button>
         @*<button id='getGroupToken' class="flat-button">Создать токен сообщества</button>*@
@@ -22,16 +18,6 @@
 
 <script>
     window.allcustombinds.push(function () {
-        document.getElementById('forceReload').addEventListener('click', function () {
-            var url = window.location.href;
-            if (url.indexOf('?') > -1) {
-                url += '&recalc'
-            } else {
-                url += '?recalc'
-            }
-            window.location.href = url;
-        });
-
         @{ 
 //document.getElementById('getGroupToken').addEventListener('click', function() {
 //    VK.callMethod('showGroupSettingsBox', 64);
