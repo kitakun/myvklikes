@@ -117,7 +117,7 @@ namespace Kitakun.VkModules.Services.GroupLikeService
 
             var linkedUserWithLikesCount = new Dictionary<long, int>();
 
-            if (allPosts.Count > 0)
+            if (groupSetting.LikePrice > 0 && allPosts.Count > 0)
             {
                 // Likes
                 var postsIdsWithLikes = CreatePostsIds(allPosts, true, false);
@@ -144,7 +144,7 @@ namespace Kitakun.VkModules.Services.GroupLikeService
                 // Comments
                 var postsIdsWithComments = CreatePostsIds(allPosts, false, true);
 
-                if (postsIdsWithComments.Length > 0)
+                if (groupSetting.CommentPrice > 0 && postsIdsWithComments.Length > 0)
                 {
                     var loadPostCommentsTask = new Task<WallGetCommentsResult>[postsIdsWithComments.Length];
                     for (var i = 0; i < postsIdsWithComments.Length; i++)
@@ -167,7 +167,7 @@ namespace Kitakun.VkModules.Services.GroupLikeService
                 var postWithReposts = CreatePostsIdsForReposts(allPosts);
 
                 // Not tested
-                if (postWithReposts.Length > 0)
+                if (groupSetting.RepostPrice > 0 && postWithReposts.Length > 0)
                 {
                     var loadReposts = new Task<WallGetObject>[postWithReposts.Length];
 
