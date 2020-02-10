@@ -2,6 +2,10 @@
     background-color: #fff;
 }
 
+* {
+    box-sizing: border-box;
+}
+
 .hide {
     display: none;
 }
@@ -51,7 +55,6 @@ h1, h2, h3, h4 {
     direction: ltr;
     font-size: 13px;
     position: relative;
-    width: 600px;
 }
 
 button {
@@ -203,4 +206,15 @@ button {
 tr.active {
     background: #f5f7fa;
     border: solid 1px #e7e8ec;
+}
+
+body {
+    width: calc(100% - 40px);
+    max-width: 600px;
+}
+
+@media(max-width:600px) {
+    .tablink {
+        display: block !important;
+    }
 }

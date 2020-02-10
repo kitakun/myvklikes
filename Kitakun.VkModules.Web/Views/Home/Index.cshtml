@@ -129,10 +129,10 @@ else
             font-size: 17px;
         }
 
-            .tablink:hover {
-                background-color: #5b88bd;
-                text-decoration: none;
-            }
+        .tablink:hover {
+            background-color: #5b88bd;
+            text-decoration: none;
+        }
 
         .tabcontent {
             display: none;
@@ -148,9 +148,9 @@ else
             z-index: 9000;
         }
 
-            .loading-modal.is-active {
-                display: block;
-            }
+        .loading-modal.is-active {
+            display: block;
+        }
 
         .overlay {
             position: fixed;
@@ -193,19 +193,25 @@ else
         modal.classList.add('is-active');
     }
 
-    document.getElementById("defaultOpen").click();
+    var defaultOpenElement = document.getElementById("defaultOpen");
+    if (defaultOpenElement) {
+        document.getElementById("defaultOpen").click();
+    }
     window.allcustombinds.push(function () {
-        document.getElementById('forceReload').addEventListener('click', function () {
+        var forceReloadElem = document.getElementById('forceReload');
+        if (forceReloadElem) {
+            document.getElementById('forceReload').addEventListener('click', function () {
 
-            loadingBeforeReloading();
+                loadingBeforeReloading();
 
-            var url = window.location.href;
-            if (url.indexOf('?') > -1) {
-                url += '&recalc'
-            } else {
-                url += '?recalc'
-            }
-            window.location.href = url;
-        });
+                var url = window.location.href;
+                if (url.indexOf('?') > -1) {
+                    url += '&recalc'
+                } else {
+                    url += '?recalc'
+                }
+                window.location.href = url;
+            });
+        }
     });
 </script>

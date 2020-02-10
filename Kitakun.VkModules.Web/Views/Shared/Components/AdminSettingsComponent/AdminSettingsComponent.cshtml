@@ -57,30 +57,20 @@
             </tr>
             <tr>
                 <td>
-                    <div>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Баллы за лайк</th>
-                                    <th>Баллы за коммент</th>
-                                    <th>Баллы за репост</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        @Html.EditorFor(x => x.PriceFromLike)
-                                    </td>
-                                    <td>
-                                        @Html.EditorFor(x => x.PriceFromComment)
-                                    </td>
-                                    <td>
-                                        @Html.EditorFor(x => x.PriceFromRepost)
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <label><b>Баллы за лайк</b></label>
+                    @Html.EditorFor(x => x.PriceFromLike, new { htmlAttributes = new { @class = "singleline-input" } })
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label><b>Баллы за коммент</b></label>
+                    @Html.EditorFor(x => x.PriceFromComment, new { htmlAttributes = new { @class = "singleline-input" } })
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label><b>Баллы за репост</b></label>
+                    @Html.EditorFor(x => x.PriceFromRepost, new { htmlAttributes = new { @class = "singleline-input" } })
                 </td>
             </tr>
 

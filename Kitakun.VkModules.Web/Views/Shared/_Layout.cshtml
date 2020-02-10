@@ -14,6 +14,7 @@
             for (var i = 0; i < window.allcustombinds.length; i++) {
                 window.allcustombinds[i]();
             }
+            vkConnect.default.send("VKWebAppInit", {});
         });
     </script>
 </head>
