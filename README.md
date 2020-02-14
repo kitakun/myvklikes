@@ -26,5 +26,6 @@ Vk widget helper app
 [Tested on ubuntu 18.04](https://myvklikes.ru)
 
 ## What can be done better
+* Store previous month offset, due groups with 40k records can have really long parsing
 * Admin panel is raw, noone can use it instead programmer
 * Admin panel losing secret query on any action

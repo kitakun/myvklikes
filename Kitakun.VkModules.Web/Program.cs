@@ -57,7 +57,7 @@ namespace Kitakun.VkModules.Web
                     c.ListenAnyIP(HttpPort);
                     c.ListenAnyIP(HttpsPort, cc =>
                     {
-                        cc.UseHttps("myvklikes.pfx", "keysecret");
+                        cc.UseHttps("myvklikes.pfx", Environment.GetEnvironmentVariable("HTTPS_PASSWORD"));
                     });
                 })
 #endif

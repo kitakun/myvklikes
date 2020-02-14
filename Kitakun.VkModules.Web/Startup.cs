@@ -29,11 +29,10 @@ namespace Kitakun.VkModules.Web
             Configuration = configuration ?? throw new System.ArgumentNullException(nameof(configuration));
         }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services
-                .AddMvc()
+                .AddMvc(x => x.SslPort = Program.HttpsPort)
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddCors(c =>
@@ -78,7 +77,7 @@ namespace Kitakun.VkModules.Web
             else
             {
                 app.UseHsts();
-                //app.UseHttpsRedirection();
+                app.UseHttpsRedirection();
             }
 
             app.UseForwardedHeaders(new ForwardedHeadersOptions
@@ -86,7 +85,11 @@ namespace Kitakun.VkModules.Web
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
 
-            app.UseHangfireDashboard(pathMatch: "/secrethangfire");
+            app.UseHangfireDashboard(pathMatch: "/secrethangfire", new DashboardOptions
+            {
+                IgnoreAntiforgeryToken = true,
+                Authorization = new[] { new HangFireAuthorizationFilter(Configuration) }
+            });
 
             //app.UseAuthentication();
             app.UseStaticFiles();
@@ -95,8 +98,8 @@ namespace Kitakun.VkModules.Web
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
-                name: "MyArea",
-                  template: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+                    name: "MyArea",
+                    template: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
                 routes.MapRoute(
                    name: "default",

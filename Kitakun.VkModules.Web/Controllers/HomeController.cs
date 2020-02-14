@@ -26,7 +26,10 @@
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public IActionResult Index() => View("Welcome");
+
+        [HttpGet("App")]
+        public async Task<IActionResult> App()
         {
             var groupId = _webContext.GroupId;
 
@@ -35,6 +38,7 @@
                 : false;
 
             return View(
+                "Index",
                 new HomeModel
                 {
                     HasSubscription = hasSub,
