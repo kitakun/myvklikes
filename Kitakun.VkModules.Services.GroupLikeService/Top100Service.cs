@@ -12,6 +12,7 @@
     using Kitakun.VkModules.Persistance;
     using Kitakun.VkModules.Services.Abstractions;
     using Kitakun.VkModules.Core.Extensions;
+    using Kitakun.VkModules.Core;
 
     public class Top100Service : ITop100Service
     {
@@ -37,8 +38,8 @@
             // const's
             var appToken = _configuration.GetValue<string>("VkAppToken");
             var currentDate = DateTime.Now;
-            var firstDayOfMonth = new DateTime(currentDate.Year, currentDate.Month, 1);
-            var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddSeconds(-1);
+            var firstDayOfMonth = currentDate.FirstDayOfMonth();
+            var lastDayOfMonth = firstDayOfMonth.LastDayOfMonth();
 
             var model = new Top100BestLikersModel
             {

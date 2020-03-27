@@ -22,7 +22,7 @@
             @{ 
                 var url = Html.Raw($"/App{Context.Request.QueryString.ToString()}");
             }
-            window.location.href = window.location.origin + '@url';
+            window.location.replace(window.location.origin + '@url');
         }, 0);
     </script>
 </body>
